@@ -47,17 +47,75 @@ class Position:
         self.r = r
 
 
-class KeyEvent(Enum):
-    Pressed = auto()
-    Released = auto()
+class KeyEvent(object):
+
+    def __init__(self, switch):
+        self.switch = switch
+
+    def is_pressed(self) -> bool:
+        return False
+
+    def is_released(self) -> bool:
+        return False
 
 
-# class KeyState:
+class KeyPressed(KeyEvent):
+
+    def __init__(self, switch):
+        super().__init__(switch)
+
+    def is_pressed(self) -> bool:
+        return True
+
+
+class KeyReleased(KeyEvent):
+
+    def __init__(self, switch):
+        super().__init__(switch)
+
+    def is_released(self) -> bool:
+        return True
+
+
+class Debouncer:
+
+    def __init__(self, limit: int):
+        self.current = False
+        self.pressed = False
+        self.count = 0
+        self.limit = limit
+
+    def update(self, pressed: bool) -> bool:
+        if self.current == pressed:
+            self.count = 0
+            return False
+        else:
+            if self.pressed == pressed:
+                self.count += 1
+            else:
+                self.pressed = pressed
+                self.count = 1
+            if self.count > self.limit:
+                self.current = self.pressed
+                self.count = 0
+                return True
+            else:
+                return False
 
 
 class KeySwitch:
 
-    def __init__(self, position: Position, actions: [Action], shape: Shape = Shape.Rectangle):
+    def __init__(self, position: Position, actions: [Action], shape: Shape = Shape.Rectangle, debounce: int = 5):
         self.shape = shape
         self.position = position
         self.actions = actions
+        self.debouncer = Debouncer(debounce)
+
+    def update(self, pressed: bool) -> KeyEvent:
+        if not self.debouncer.update(pressed):
+            return KeyEvent(self)
+        elif self.debouncer.current:
+            return KeyPressed(self)
+        else:
+            return KeyReleased(self)
+

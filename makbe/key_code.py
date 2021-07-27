@@ -93,7 +93,7 @@ class KeyCode(IntEnum):
     # `]` and `}`.
     RBracket = auto()
     # `\` and `|`.
-    Bslash = auto()
+    BSlash = auto()
     # Non-US `#` and `~` (Typically near the Enter key).
     NonUsHash = auto()
     # `;` and `:`.
