@@ -92,13 +92,14 @@ class EventQueue:
         self.size = size
         self.tail = 0
 
-    def push(self, stacked: EventSince):
+    def push(self, event: EventSince):
         result = None
         position = self.tail % self.size
         if self.tail >= self.size:
             result = self.buffer[position]
-        self.buffer[position] = stacked
+        self.buffer[position] = event
         self.tail += 1
+        self.tail %= self.size * 2
         return result
 
 
