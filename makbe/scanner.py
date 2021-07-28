@@ -20,3 +20,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from .keyevent import KeyPressed, KeyReleased
+from .device import Device
+from .evaluator import Evaluator
+
+
+class Scanner:
+
+    def __init__(self, devices: [Device], i2c):
+        self.evaluator = Evaluator()
+        self.devices = devices
+        for d in devices:
+            d.init_device(i2c)
+
+    def scan(self, i2c):
+        for d in self.devices:
+            for i, p in enumerate(d.read_device(i2c)):
+                switch = d.switch(i)
+                if p:
+                    self.evaluator.eval(KeyPressed(switch))
+                else:
+                    self.evaluator.eval(KeyReleased(switch))

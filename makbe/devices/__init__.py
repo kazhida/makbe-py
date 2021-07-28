@@ -20,10 +20,5 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .action import *
-from .device import *
-from .keycode import *
-from .keyswitch import *
-from .reporter import *
-from .scanner import *
-from .devices import *
+from tca9554 import *
+from tca9555 import *

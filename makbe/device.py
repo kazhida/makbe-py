@@ -20,3 +20,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from .keyswitch import KeySwitch
+
+
+class Device:
+
+    def init_device(self, i2c) -> bool:
+        pass
+
+    def read_device(self, i2c) -> [bool]:
+        pass
+
+    def assign(self, pin: int, switch: KeySwitch):
+        pass
+
+    def switch(self, pin: int) -> KeySwitch:
+        pass

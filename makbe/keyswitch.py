@@ -21,7 +21,8 @@
 # SOFTWARE.
 
 from enum import Enum, auto
-from makbe.action import Action
+from .action import Action, Trans
+from .keyevent import KeyEvent, KeyPressed, KeyReleased
 
 
 class Shape(Enum):
@@ -45,36 +46,6 @@ class Position:
         self.w = w
         self.h = h
         self.r = r
-
-
-class KeyEvent(object):
-
-    def __init__(self, switch):
-        self.switch = switch
-
-    def is_pressed(self) -> bool:
-        return False
-
-    def is_released(self) -> bool:
-        return False
-
-
-class KeyPressed(KeyEvent):
-
-    def __init__(self, switch):
-        super().__init__(switch)
-
-    def is_pressed(self) -> bool:
-        return True
-
-
-class KeyReleased(KeyEvent):
-
-    def __init__(self, switch):
-        super().__init__(switch)
-
-    def is_released(self) -> bool:
-        return True
 
 
 class Debouncer:
@@ -105,10 +76,14 @@ class Debouncer:
 
 class KeySwitch:
 
-    def __init__(self, position: Position, actions: [Action], shape: Shape = Shape.Rectangle, debounce: int = 5):
+    def __init__(self, position: Position, actions: [Action],
+                 default: Action = Trans(),
+                 shape: Shape = Shape.Rectangle,
+                 debounce: int = 5):
         self.shape = shape
         self.position = position
         self.actions = actions
+        self.default_action = default
         self.debouncer = Debouncer(debounce)
 
     def update(self, pressed: bool) -> KeyEvent:
@@ -119,3 +94,12 @@ class KeySwitch:
         else:
             return KeyReleased(self)
 
+    def action(self, layer: int) -> Action:
+        if layer < len(self.actions):
+            return self.actions[layer]
+        else:
+            return self.default_action
+
+
+def dummy_switch() -> KeySwitch:
+    return KeySwitch(Position(), [])

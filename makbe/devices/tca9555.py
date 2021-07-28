@@ -20,10 +20,38 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .action import *
-from .device import *
-from .keycode import *
-from .keyswitch import *
-from .reporter import *
-from .scanner import *
-from .devices import *
+from .. import Device, KeySwitch, dummy_switch
+
+
+class TCA9555(Device):
+
+    def __init__(self, dev_addr: int):
+        self.dev_addr = dev_addr
+        self.switches = []
+        for i in range(16):
+            self.switches.append(dummy_switch())
+
+    def init_device(self, i2c) -> bool:
+        i2c.writeto(self.dev_addr, bytes([0x06, 0xFF]), True)
+        i2c.writeto(self.dev_addr, bytes([0x07, 0xFF]), True)
+        return True
+
+    def read_device(self, i2c) -> [bool]:
+        i2c.writeto(self.dev_addr, bytes([0x00]), False)
+        buffer = bytearray(2)
+        i2c.readfrom_into(self.dev_addr, buffer)
+        result = []
+        for i, b in enumerate(buffer):
+            for p in range(8):
+                mask = 1 << p
+                if buffer[i] & mask != 0:
+                    result.append(True)
+                else:
+                    result.append(False)
+        return result
+
+    def assign(self, pin: int, switch: KeySwitch):
+        self.switches[pin] = switch
+
+    def switch(self, pin: int) -> KeySwitch:
+        return self.switches[pin]

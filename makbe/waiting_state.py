@@ -20,10 +20,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .action import *
-from .device import *
-from .keycode import *
-from .keyswitch import *
-from .reporter import *
-from .scanner import *
-from .devices import *
+from .action import Action
+from .keyevent import KeyEvent
+from .keyswitch import KeySwitch
+
+
+class WaitingState:
+
+    def __init__(self, switch: KeySwitch, timeout: int, hold: Action, tap: Action):
+        self.switch = switch
+        self.timeout = timeout
+        self.hold = hold
+        self.tap = tap
+
+    def tick(self):
+        self.timeout -= 1
+        return self.timeout <= 0
+
+    def is_corresponding_release(self, event: KeyEvent):
+        return event.is_released() and event.switch == self.switch
+

@@ -19,88 +19,14 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from makbe import KeySwitch, Action, KeyEvent
-from makbe.key_code import KeyCode
-from makbe.reporter import Reporter
 
-
-class KeyState:
-
-    def __init__(self, switch):
-        self.switch = switch
-
-    def key_code(self):
-        return None
-
-    def get_layer(self):
-        return None
-
-    def release(self, switch):
-        return self.switch == switch
-
-
-class NormalKey(KeyState):
-
-    def __init__(self, keycode: KeyCode, switch: KeySwitch):
-        super().__init__(switch)
-        self.keycode = keycode
-
-    def key_code(self):
-        return self.keycode
-
-
-class LayerModifier(KeyState):
-
-    def __init__(self, layer: int, switch: KeySwitch):
-        super().__init__(switch)
-        self.layer = layer
-
-    def get_layer(self):
-        return self.layer
-
-
-class WaitingState:
-
-    def __init__(self, switch: KeySwitch, timeout: int, hold: Action, tap: Action):
-        self.switch = switch
-        self.timeout = timeout
-        self.hold = hold
-        self.tap = tap
-
-    def tick(self):
-        self.timeout -= 1
-        return self.timeout <= 0
-
-    def is_corresponding_release(self, event: KeyEvent):
-        return event.is_released() and event.switch == self.switch
-
-
-class EventSince:
-
-    def __init__(self, event: KeyEvent):
-        self.event = event
-        self.since = 0
-
-    def tick(self):
-        self.since += 1
-
-
-class EventQueue:
-
-    def __init__(self, size: int):
-        self.buffer = []
-        self.size = size
-        self.tail = 0
-
-    def push(self, event: EventSince):
-        result = None
-        position = self.tail % self.size
-        if self.tail >= self.size:
-            result = self.buffer[position]
-        self.buffer[position] = event
-        self.tail += 1
-        self.tail %= self.size * 2
-        return result
+from typing import cast
+from .action import Action, Trans, NoOp, HoldTap, MultipleKeyCodes, Layer
+from .keycode import KeyCode
+from .keyevent import EventQueue, KeyEvent, EventSince, EventIterator, KeyReleased, KeyPressed
+from .keystate import KeyState, NormalKey, LayerModifier
+from .keyswitch import KeySwitch
+from .waiting_state import WaitingState
 
 
 class Evaluator:
@@ -108,22 +34,108 @@ class Evaluator:
     def __init__(self):
         self.states: [KeyState] = []
         self.waiting: [WaitingState] = []
-        self.stacked: [EventSince] = []
+        self.stacked = EventQueue(16)
 
-    def eval(self, event: KeyEvent, reporter: Reporter):
-        pass
+    def eval(self, event: KeyEvent):
 
-    def tick(self, reporter: Reporter):
-        pass
+        push_backed = self.stacked.push(EventSince(event))
+        if push_backed is not None:
+            self.waiting_into_hold()
+            self.unstack(push_backed)
+
+        waiting_state = self.waiting_state_or_none()
+        if waiting_state and waiting_state.is_corresponding_release:
+            self.waiting_into_tap()
+
+    def tick(self):
+        self.states = filter(lambda st: st is not None, self.states)
+        for s in EventIterator(self.stacked):
+            s.tick()
+
+        waiting_state = self.waiting_state_or_none()
+        if waiting_state:
+            self.waiting_into_tap()
+        if waiting_state is None:
+            stacked = self.stacked.pop()
+            if stacked is not None:
+                self.unstack(stacked)
+        else:
+            if waiting_state.tick():
+                self.waiting_into_hold()
+        return self.keycodes()
+
+    def waiting_state_or_none(self):
+        if self.waiting.count(WaitingState) > 0:
+            return self.waiting[0]
+        else:
+            return None
 
     def waiting_into_hold(self):
-        pass
+        waiting_state = self.waiting_state_or_none()
+        if waiting_state:
+            hold = waiting_state.hold
+            switch = waiting_state.switch
+            self.waiting.clear()
+            self.do_action(hold, switch, 0)
 
     def waiting_into_tap(self):
-        pass
+        waiting_state = self.waiting_state_or_none()
+        if waiting_state:
+            tap = waiting_state.tap
+            switch = waiting_state.switch
+            self.waiting.clear()
+            self.do_action(tap, switch, 0)
 
     def unstack(self, stacked: EventSince):
-        pass
+
+        if isinstance(stacked.event, KeyReleased):
+            self.states = filter(lambda s: s is not None, map(lambda s: s.release(stacked.event.switch), self.states))
+
+        if isinstance(stacked.event, KeyPressed):
+            action = self.press_as_action(stacked.event.switch, self.current_layer())
+            self.do_action(action, stacked.event.switch, stacked.since)
 
     def keycodes(self):
-        pass
+        return filter(lambda s: s is not None, map(lambda s: s.key_code, self.states))
+
+    def current_layer(self) -> int:
+        layers = filter(lambda ly: ly is not None, map(lambda st: st.get_layer, self.states))
+        layer = 0
+        for la in layers:
+            layer += la
+        return layer
+
+    def press_as_action(self, switch: KeySwitch, layer: int) -> Action:
+        action = switch.action(layer)
+        if action is Trans:
+            if layer > 0:
+                return self.press_as_action(switch, layer - 1)
+            else:
+                return NoOp()
+        else:
+            return action
+
+    def do_action(self, action: Action, switch: KeySwitch, delay: int):
+
+        if action is KeyCode:
+            self.states.append(NormalKey(action.key_codes()[0], switch))
+
+        if action is MultipleKeyCodes:
+            for kc in action.key_codes():
+                self.states.append(NormalKey(kc, switch))
+
+        if action is Layer:
+            self.states.append(LayerModifier(action.layer(), switch))
+
+        if action is HoldTap:
+            hold_tap = cast(HoldTap, action)
+            hold = hold_tap.hold
+            tap = hold_tap.tap
+            timeout = hold_tap.timeout
+            self.waiting = WaitingState(switch, timeout - delay, hold, tap)
+            for event in EventIterator(self.stacked):
+                if self.waiting.is_corresponding_release(event):
+                    if timeout < delay - event.since:
+                        self.waiting_into_hold()
+                    else:
+                        self.waiting_into_tap()

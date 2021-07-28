@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from makbe.key_code import KeyCode
+from .keycode import KeyCode
 
 
 class Reporter:

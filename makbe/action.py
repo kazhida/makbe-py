@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from makbe.key_code import KeyCode
+from .keycode import KeyCode
 
 
 class Action:
@@ -71,13 +71,13 @@ class Layer(Action):
         return self.layer
 
 
-class DefaultLayer(Action):
-
-    def __init__(self, layer: int):
-        self.layer = layer
-
-    def layer(self):
-        return self.layer
+# class DefaultLayer(Action):
+#
+#     def __init__(self, layer: int):
+#         self.layer = layer
+#
+#     def layer(self):
+#         return self.layer
 
 
 class HoldTap(Action):
@@ -95,8 +95,8 @@ def la(layer: int) -> Action:
     return Layer(layer)
 
 
-def d(layer: int) -> Action:
-    return DefaultLayer(layer)
+# def d(layer: int) -> Action:
+#     return DefaultLayer(layer)
 
 
 def m(kcs: [KeyCode]) -> Action:
