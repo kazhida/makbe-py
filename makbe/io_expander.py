@@ -20,43 +20,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .keycode import KeyCode
-from .keyswitch import KeySwitch
+from .key_switch import KeySwitch
 
 
-class KeyState:
+class IoExpander:
 
-    def __init__(self, switch):
-        self.switch = switch
+    def init_device(self, i2c) -> bool:
+        pass
 
-    def key_code(self):
-        return None
+    def read_device(self, i2c) -> [bool]:
+        pass
 
-    def get_layer(self):
-        return None
+    def assign(self, pin: int, switch: KeySwitch):
+        pass
 
-    def release(self, switch):
-        if self.switch == switch:
-            return self
-        else:
-            return None
-
-
-class NormalKey(KeyState):
-
-    def __init__(self, keycode: KeyCode, switch: KeySwitch):
-        super().__init__(switch)
-        self.keycode = keycode
-
-    def key_code(self):
-        return self.keycode
-
-
-class LayerModifier(KeyState):
-
-    def __init__(self, layer: int, switch: KeySwitch):
-        super().__init__(switch)
-        self.layer = layer
-
-    def get_layer(self):
-        return self.layer
+    def switch(self, pin: int) -> KeySwitch:
+        pass

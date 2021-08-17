@@ -20,24 +20,43 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .keyevent import KeyPressed, KeyReleased
-from .device import Device
-from .evaluator import Evaluator
+from .key_code import KeyCode
+from .key_switch import KeySwitch
 
 
-class Scanner:
+class KeyState:
 
-    def __init__(self, devices: [Device], i2c):
-        self.evaluator = Evaluator()
-        self.devices = devices
-        for d in devices:
-            d.init_device(i2c)
+    def __init__(self, switch):
+        self.switch = switch
 
-    def scan(self, i2c):
-        for d in self.devices:
-            for i, p in enumerate(d.read_device(i2c)):
-                switch = d.switch(i)
-                if p:
-                    self.evaluator.eval(KeyPressed(switch))
-                else:
-                    self.evaluator.eval(KeyReleased(switch))
+    def key_code(self):
+        return None
+
+    def get_layer(self):
+        return None
+
+    def release(self, switch):
+        if self.switch == switch:
+            return self
+        else:
+            return None
+
+
+class NormalKey(KeyState):
+
+    def __init__(self, keycode: KeyCode, switch: KeySwitch):
+        super().__init__(switch)
+        self.keycode = keycode
+
+    def key_code(self):
+        return self.keycode
+
+
+class LayerModifier(KeyState):
+
+    def __init__(self, layer: int, switch: KeySwitch):
+        super().__init__(switch)
+        self.layer = layer
+
+    def get_layer(self):
+        return self.layer

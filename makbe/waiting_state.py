@@ -21,8 +21,8 @@
 # SOFTWARE.
 
 from .action import Action
-from .keyevent import KeyEvent
-from .keyswitch import KeySwitch
+from .key_event import KeyEvent
+from .key_switch import KeySwitch
 
 
 class WaitingState:
@@ -39,4 +39,3 @@ class WaitingState:
 
     def is_corresponding_release(self, event: KeyEvent):
         return event.is_released() and event.switch == self.switch
-

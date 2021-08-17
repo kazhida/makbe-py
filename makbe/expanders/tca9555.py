@@ -20,10 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .. import Device, KeySwitch, dummy_switch
+from .. import IoExpander, KeySwitch, dummy_switch
 
 
-class TCA9555(Device):
+class TCA9555(IoExpander):
 
     def __init__(self, dev_addr: int):
         self.dev_addr = dev_addr

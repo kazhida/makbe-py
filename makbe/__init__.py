@@ -21,9 +21,9 @@
 # SOFTWARE.
 
 from .action import *
-from .device import *
-from .keycode import *
-from .keyswitch import *
+from .io_expander import *
+from .key_code import *
+from .key_switch import *
 from .reporter import *
-from .scanner import *
-from .devices import *
+from .i2c_scanner import *
+from .expanders import *

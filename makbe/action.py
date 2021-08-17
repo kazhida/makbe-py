@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .keycode import KeyCode
+from .key_code import KeyCode
 
 
 class Action:
@@ -91,16 +91,16 @@ def k(kc: KeyCode) -> Action:
     return SingleKeyCode(kc)
 
 
+def m(kcs: [KeyCode]) -> Action:
+    return MultipleKeyCodes(kcs)
+
+
 def la(layer: int) -> Action:
     return Layer(layer)
 
 
 # def d(layer: int) -> Action:
 #     return DefaultLayer(layer)
-
-
-def m(kcs: [KeyCode]) -> Action:
-    return MultipleKeyCodes(kcs)
 
 
 def lt(layer:int, kc: KeyCode) -> Action:

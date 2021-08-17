@@ -20,36 +20,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .. import dummy_switch, Device, KeySwitch
+from .key_event import KeyPressed, KeyReleased
+from .io_expander import IoExpander
+from .evaluator import Evaluator
 
 
-class TCA9554(Device):
+class I2CScanner:
 
-    def __init__(self, dev_addr: int):
-        self.dev_addr = dev_addr
-        self.switches = []
-        for i in range(8):
-            self.switches.append(dummy_switch())
+    def __init__(self, devices: [IoExpander], i2c):
+        self.evaluator = Evaluator()
+        self.devices = devices
+        for d in devices:
+            d.init_device(i2c)
 
-    def init_device(self, i2c) -> bool:
-        i2c.writeto(self.dev_addr, bytes([0x03, 0xFF]), True)
-        return True
-
-    def read_device(self, i2c) -> [bool]:
-        i2c.writeto(self.dev_addr, bytes([0x00]), False)
-        buffer = bytearray(1)
-        i2c.readfrom_into(self.dev_addr, buffer)
-        result = []
-        for p in range(8):
-            mask = 1 << p
-            if buffer[0] & mask != 0:
-                result.append(True)
-            else:
-                result.append(False)
-        return result
-
-    def assign(self, pin: int, switch: KeySwitch):
-        self.switches[pin] = switch
-
-    def switch(self, pin: int) -> KeySwitch:
-        return self.switches[pin]
+    def scan(self, i2c):
+        for d in self.devices:
+            for i, p in enumerate(d.read_device(i2c)):
+                switch = d.switch(i)
+                if p:
+                    self.evaluator.eval(KeyPressed(switch))
+                else:
+                    self.evaluator.eval(KeyReleased(switch))

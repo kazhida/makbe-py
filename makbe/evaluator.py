@@ -22,10 +22,10 @@
 
 from typing import cast
 from .action import Action, Trans, NoOp, HoldTap, MultipleKeyCodes, Layer
-from .keycode import KeyCode
-from .keyevent import EventQueue, KeyEvent, EventSince, EventIterator, KeyReleased, KeyPressed
-from .keystate import KeyState, NormalKey, LayerModifier
-from .keyswitch import KeySwitch
+from .key_code import KeyCode
+from .key_event import EventQueue, KeyEvent, EventSince, EventIterator, KeyReleased, KeyPressed
+from .key_state import KeyState, NormalKey, LayerModifier
+from .key_switch import KeySwitch
 from .waiting_state import WaitingState
 
 
@@ -37,17 +37,18 @@ class Evaluator:
         self.stacked = EventQueue(16)
 
     def eval(self, event: KeyEvent):
-
+        # stackedに格納。あふれたものは、waiting_into_hold()へ
         push_backed = self.stacked.push(EventSince(event))
         if push_backed is not None:
             self.waiting_into_hold()
             self.unstack(push_backed)
-
+        # waiting_stateにあれば、waiting_into_tap()へ
         waiting_state = self.waiting_state_or_none()
         if waiting_state and waiting_state.is_corresponding_release:
             self.waiting_into_tap()
 
     def tick(self):
+        # statesを正規化して、それぞれにtick()
         self.states = filter(lambda st: st is not None, self.states)
         for s in EventIterator(self.stacked):
             s.tick()
@@ -66,8 +67,10 @@ class Evaluator:
 
     def waiting_state_or_none(self):
         if self.waiting.count(WaitingState) > 0:
+            # waiting_stateがあればそれを返す
             return self.waiting[0]
         else:
+            # 無ければ、Noneを返す
             return None
 
     def waiting_into_hold(self):

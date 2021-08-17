@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .keyswitch import KeySwitch
+from .key_switch import KeySwitch
 
 
 class KeyEvent(object):
@@ -86,10 +86,12 @@ class EventQueue:
     def pop(self):
         if self.tail == 0:
             return None
-        else:
+        elif self.head < self.tail:
             result = self.buffer[self.head % self.size]
             self.head += 1
             return result
+        else:
+            return None
 
     def count(self) -> int:
         return min(self.tail, self.size)
@@ -97,12 +99,12 @@ class EventQueue:
     def get(self, index: int):
         if self.tail == 0:
             return None
-        elif self.tail < self.size:
-            return self.buffer[index]
-        else:
-            index += self.tail
+        elif self.head < self.tail:
+            index += self.head
             index %= self.size
             return self.buffer[index]
+        else:
+            return None
 
 
 class EventIterator(object):

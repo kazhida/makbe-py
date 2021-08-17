@@ -20,32 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from enum import Enum, auto
-from .action import Action, Trans
-from .keyevent import KeyEvent, KeyPressed, KeyReleased
-
-
-class Shape(Enum):
-    Rectangle = auto()
-    IsoEnter = auto()
-
-
-class Rotation:
-
-    def __init__(self, angle: float = 0, center_x: float = 0, center_y: float = 0):
-        self.a = angle
-        self.x = center_x
-        self.y = center_y
-
-
-class Position:
-
-    def __init__(self, x: float = 0, y: float = 0, w: float = 1, h: float = 1, r: Rotation = Rotation()):
-        self.x = x
-        self.y = y
-        self.w = w
-        self.h = h
-        self.r = r
+from .action import Action, Trans, NoOp
+from .key_event import KeyEvent, KeyPressed, KeyReleased
 
 
 class Debouncer:
@@ -76,12 +52,9 @@ class Debouncer:
 
 class KeySwitch:
 
-    def __init__(self, position: Position, actions: [Action],
+    def __init__(self, actions: [Action],
                  default: Action = Trans(),
-                 shape: Shape = Shape.Rectangle,
                  debounce: int = 5):
-        self.shape = shape
-        self.position = position
         self.actions = actions
         self.default_action = default
         self.debouncer = Debouncer(debounce)
@@ -102,4 +75,4 @@ class KeySwitch:
 
 
 def dummy_switch() -> KeySwitch:
-    return KeySwitch(Position(), [])
+    return KeySwitch([], NoOp())
