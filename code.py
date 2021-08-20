@@ -31,4 +31,4 @@ keyboard = Column13ansi()
 
 # 無限ループでスキャンする
 while True:
-    keyboard.scan()
+    keyboard.scanner.scan()

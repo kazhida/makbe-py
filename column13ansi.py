@@ -28,6 +28,9 @@ from makbe.modeless_processor import ModelessProcessor
 
 
 class Switches:
+    """キースイッチ一覧
+    このライブラリでは、Switchesクラスとして使用するキースイッチを全部列挙する
+    """
 
     def __init__(self):
         self.esc = KeySwitch(k(KeyCode.ESCAPE))
@@ -81,11 +84,20 @@ class Switches:
 
 
 class Column13ansi:
+    """例としてColumn13のansi配列を実装している
+    """
 
     def __init__(self):
+        """キーボードの初期化
+        キースイッチクラスタを生成し、I2CScannerを使うのでI/Oエクスパンダにそれを割り当ててて、
+        とりあえず、ModelessProcessorで処理するようにしている
+        """
+
+        # スイッチとI/Oエクスパンダのリストを生成
         self.sw = Switches()
         self.expanders = []
 
+        # キーの割り当て、1つ目
         expander = TCA9555(0x00)
         expander.assign(0, self.sw.esc)
         expander.assign(1, self.sw.kb_q)
@@ -101,6 +113,7 @@ class Column13ansi:
         expander.assign(13, self.sw.kb_g)
         self.expanders.append(expander)
 
+        # キーの割り当て、2つ目
         expander = TCA9555(0x00)
         expander.assign(0, self.sw.kb_y)
         expander.assign(1, self.sw.kb_u)
@@ -117,6 +130,7 @@ class Column13ansi:
         expander.assign(13, self.sw.enter)
         self.expanders.append(expander)
 
+        # キーの割り当て、3つ目
         expander = TCA9555(0x00)
         expander.assign(0, self.sw.l_shift)
         expander.assign(1, self.sw.kb_z)
@@ -131,6 +145,7 @@ class Column13ansi:
         expander.assign(12, self.sw.l_space)
         self.expanders.append(expander)
 
+        # キーの割り当て、4つ目
         expander = TCA9555(0x00)
         expander.assign(0, self.sw.kb_n)
         expander.assign(1, self.sw.kb_m)
@@ -146,12 +161,14 @@ class Column13ansi:
         expander.assign(13, self.sw.right)
         self.expanders.append(expander)
 
+        # I2Cマスタの生成
         i2c = I2C(SDA, SCL)
         while not i2c.try_lock():
             pass
 
+        # プロセッサ（とりあえずModelessProcessor）の生成
         kbd = Keyboard(usb_hid.devices)
-        self.scanner = I2CScanner(self.expanders, i2c, ModelessProcessor(kbd))
+        proc = ModelessProcessor(kbd)
 
-    def scan(self):
-        self.scanner.scan()
+        # スキャナの生成
+        self.scanner = I2CScanner(self.expanders, i2c, proc)
