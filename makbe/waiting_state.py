@@ -26,6 +26,9 @@ from .key_switch import KeySwitch
 
 
 class WaitingState:
+    """HoldTapを処理するためのなにか
+    Keyberonからのベタ移植なので、仕組みはまだ分かっていない(^^;
+    """
 
     def __init__(self, switch: KeySwitch, timeout: int, hold: Action, tap: Action):
         self.switch = switch

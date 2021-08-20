@@ -19,9 +19,17 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from .action import *
-from .io_expander import *
-from .expanders import *
-from .key_code import *
-from .key_switch import *
-from .i2c_scanner import *
+
+"""
+  dummies
+"""
+
+
+class I2C:
+
+    def __init__(self, sda, scl):
+        self.sda = sda
+        self.scl = scl
+
+    def try_lock(self) -> bool:
+        return True

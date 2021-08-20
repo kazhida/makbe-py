@@ -19,9 +19,28 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from .action import *
-from .io_expander import *
-from .expanders import *
-from .key_code import *
-from .key_switch import *
-from .i2c_scanner import *
+from makbe import KeyEvent, KeyPressed, KeyReleased
+from makbe.processor import Processor
+
+
+class ModelessProcessor(Processor):
+    """デバウンス以外の内部処理をしないプロセッサ
+    レイヤやHoldTapを使用しない場合は、このプロセッサで十分
+    このライブラリの内部処理のバグから逃れられる
+    """
+
+    def __init__(self, kbd):
+        """
+        :param kbd: CircuitPythonのadafruit_hid.keyboard.Keyboard
+        """
+        self.kbd = kbd
+
+    def put(self, event: KeyEvent):
+        """イベントの処理
+        イベントをそのままKeyboardに渡す
+        :param event: 処理するイベント
+        """
+        if isinstance(event, KeyPressed):
+            self.kbd.press(event.switch.action(0).key_codes())
+        if isinstance(event, KeyReleased):
+            self.kbd.release(event.switch.action(0).key_codes())

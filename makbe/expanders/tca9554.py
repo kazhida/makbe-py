@@ -19,26 +19,39 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-from .. import dummy_switch, IoExpander, KeySwitch
+from .. import nop_switch, IoExpander, KeySwitch
 
 
 class TCA9554(IoExpander):
+    """TCA9554（PCA9554も同じ）
+    """
 
-    def __init__(self, dev_addr: int):
-        self.dev_addr = dev_addr
+    def __init__(self, dev_address: int):
+        """デバイスアドレスを指定してオブジェクトを生成
+        上位4ビット分は固定なので、下位3ビット部分だけを指定する
+        :param dev_address: デバイスアドレスの下位3ビット分
+        """
+        self.dev_address = dev_address + 0x20
         self.switches = []
         for i in range(8):
-            self.switches.append(dummy_switch())
+            self.switches.append(nop_switch())
 
     def init_device(self, i2c) -> bool:
-        i2c.writeto(self.dev_addr, bytes([0x03, 0xFF]), True)
+        """I2Cの初期化
+        :param i2c: I2Cマスタ
+        :return: Trueを返す
+        """
+        i2c.writeto(self.dev_address, bytes([0x03, 0xFF]), True)
         return True
 
     def read_device(self, i2c) -> [bool]:
-        i2c.writeto(self.dev_addr, bytes([0x00]), False)
+        """I/Oエクスパンダを読み込んで、その状態を返す
+        :param i2c: I2Cマスタ
+        :return: 各ピンの状態（ONでTrue）のリストを返す
+        """
+        i2c.writeto(self.dev_address, bytes([0x00]), False)
         buffer = bytearray(1)
-        i2c.readfrom_into(self.dev_addr, buffer)
+        i2c.readfrom_into(self.dev_address, buffer)
         result = []
         for p in range(8):
             mask = 1 << p
@@ -49,7 +62,15 @@ class TCA9554(IoExpander):
         return result
 
     def assign(self, pin: int, switch: KeySwitch):
+        """ピンにキースイッチを割り当てる
+        :param pin: ピン番号（0オリジン）
+        :param switch: キースイッチ
+        """
         self.switches[pin] = switch
 
     def switch(self, pin: int) -> KeySwitch:
+        """ピンに対応するキースイッチを返す
+        :param pin: ピン番号（0オリジン）
+        :return: 対応するキースイッチ
+        """
         return self.switches[pin]

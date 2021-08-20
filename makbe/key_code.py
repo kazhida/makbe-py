@@ -24,92 +24,97 @@ from enum import IntEnum
 
 
 class KeyCode(IntEnum):
+    """キーコード
+    CircuitPythonにadafruit_hid.keyboard.KeyCodeがあるが、
+    ここではCircuitPythonに依存したくないので、独自に定義している
+    """
+
     # The "no" key, a placeholder to express nothing.
-    No = 0x00
+    NO = 0x00
     # Error if too much keys are pressed at the same time.
-    ErrorRollOver = 0x01
+    ERROR_ROLL_OVER = 0x01
     # The POST fail error.
-    PostFail = 0x02
+    POST_FAIL = 0x02
     # An undefined error occurred.
-    ErrorUndefined = 0x03
+    ERROR_UNDEFINED = 0x03
     # `a` and `A`.
-    A = 0x04
-    B = 0x05
-    C = 0x06
-    D = 0x07
-    E = 0x08
-    F = 0x09
-    G = 0x0a
-    H = 0x0b
-    I = 0x0c
-    J = 0x0d
-    K = 0x0e
-    L = 0x0f
-    M = 0x10
-    N = 0x11
-    O = 0x12
-    P = 0x13
-    Q = 0x14
-    R = 0x15
-    S = 0x16
-    T = 0x17
-    U = 0x18
-    V = 0x19
-    W = 0x1A
-    X = 0x1B
-    Y = 0x1C
-    Z = 0x1D
+    KB_A = 0x04
+    KB_B = 0x05
+    KB_C = 0x06
+    KB_D = 0x07
+    KB_E = 0x08
+    KB_F = 0x09
+    KB_G = 0x0a
+    KB_H = 0x0b
+    KB_I = 0x0c
+    KB_J = 0x0d
+    KB_K = 0x0e
+    KB_L = 0x0f
+    KB_M = 0x10
+    KB_N = 0x11
+    KB_O = 0x12
+    KB_P = 0x13
+    KB_Q = 0x14
+    KB_R = 0x15
+    KB_S = 0x16
+    KB_T = 0x17
+    KB_U = 0x18
+    KB_V = 0x19
+    KB_W = 0x1A
+    KB_X = 0x1B
+    KB_Y = 0x1C
+    KB_Z = 0x1D
     # `1` and `!`.
-    Kb1 = 0x1E
+    KB_1 = 0x1E
     # `2` and `@`.
-    Kb2 = 0x1F
+    KB_2 = 0x1F
     # `3` and `#`.
-    Kb3 = 0x20
+    KB_3 = 0x20
     # `4` and `$`.
-    Kb4 = 0x21
+    KB_4 = 0x21
     # `5` and `%`.
-    Kb5 = 0x22
+    KB_5 = 0x22
     # `6` and `^`.
-    Kb6 = 0x23
+    KB_6 = 0x23
     # `7` and `&`.
-    Kb7 = 0x24
+    KB_7 = 0x24
     # `8` and `*`.
-    Kb8 = 0x25
+    KB_8 = 0x25
     # `9` and `(`.
-    Kb9 = 0x26
+    KB_9 = 0x26
     # `0` and `)`.
-    Kb0 = 0x27
-    Enter = 0x28
-    Escape = 0x29
-    BSpace = 0x2A
-    Tab = 0x2B
-    Space = 0x2C
+    KB_0 = 0x27
+    ENTER = 0x28
+    ESCAPE = 0x29
+    BACK_SPACE = 0x2A
+    TAB = 0x2B
+    SPACE = 0x2C
     # `-` and `_`.
-    Minus = 0x2D
+    MINUS = 0x2D
     # `=` and `+`.
-    Equal = 0x2E
+    EQUAL = 0x2E
     # `[` and `{`.
-    LBracket = 0x2F
+    L_BRACKET = 0x2F
     # `]` and `}`.
-    RBracket = 0x30
+    R_BRACKET = 0x30
     # `\` and `|`.
-    BSlash = 0x31
+    BACK_SLASH = 0x31
     # Non-US `#` and `~` (Typically near the Enter key).
-    NonUsHash = 0x32
+    NON_US_HASH = 0x32
     # `;` and `:`.
-    SColon = 0x33
+    SEMI_COLON = 0x33
     # `'` and `"`.
-    Quote = 0x34
+    QUOTE = 0x34
     # How to have ` as code?
     # \` and `~`.
-    Grave = 0x35
+    GRAVE = 0x35
     # `,` and `<`.
-    Comma = 0x36
+    COMMA = 0x36
     # `.` and `>`.
-    Dot = 0x37
+    DOT = 0x37
     # `/` and `?`.
-    Slash = 0x38
-    CapsLock = 0x39
+    SLASH = 0x38
+    CAPS_LOCK = 0x39
     F1 = 0x3A
     F2 = 0x3B
     F3 = 0x3C
@@ -122,49 +127,49 @@ class KeyCode(IntEnum):
     F10 = 0x43
     F11 = 0x44
     F12 = 0x45
-    PScreen = 0x46
-    ScrollLock = 0x47
-    Pause = 0x48
-    Insert = 0x49
-    Home = 0x4A
-    PgUp = 0x4B
-    Delete = 0x4C
-    End = 0x4D
-    PgDown = 0x4E
-    Right = 0x4F
-    Left = 0x50
-    Down = 0x51
-    Up = 0x52
-    NumLock = 0x53
+    PRINT_SCREEN = 0x46
+    SCROLL_LOCK = 0x47
+    PAUSE = 0x48
+    INSERT = 0x49
+    HOME = 0x4A
+    PAGE_UP = 0x4B
+    DELETE = 0x4C
+    END = 0x4D
+    PAGE_DOWN = 0x4E
+    RIGHT = 0x4F
+    LEFT = 0x50
+    DOWN = 0x51
+    UP = 0x52
+    NUM_LOCK = 0x53
     # Keypad `/`
-    KpSlash = 0x54
+    KP_SLASH = 0x54
     # Keypad `*`
-    KpAsterisk = 0x55
+    KP_ASTERISK = 0x55
     # Keypad `-`.
-    KpMinus = 0x56
+    KP_MINUS = 0x56
     # Keypad `+`.
-    KpPlus = 0x57
+    KP_PLUS = 0x57
     # Keypad enter.
-    KpEnter = 0x58
+    KP_ENTER = 0x58
     # Keypad 1.
-    Kp1 = 0x59
-    Kp2 = 0x5A
-    Kp3 = 0x5B
-    Kp4 = 0x5C
-    Kp5 = 0x5D
-    Kp6 = 0x5E
-    Kp7 = 0x5F
-    Kp8 = 0x60
-    Kp9 = 0x61
-    Kp0 = 0x62
-    KpDot = 0x63
+    KP_1 = 0x59
+    KP_2 = 0x5A
+    KP_3 = 0x5B
+    KP_4 = 0x5C
+    KP_5 = 0x5D
+    KP_6 = 0x5E
+    KP_7 = 0x5F
+    KP_8 = 0x60
+    KP_9 = 0x61
+    KP_0 = 0x62
+    KP_DOT = 0x63
     # Non-US `\` and `|` (Typically near the Left-Shift key)
-    NonUsBslash = 0x64
-    Application = 0x65
+    NON_US_BK_SLASH = 0x64
+    APPLICATION = 0x65
     # not a key, used for errors
-    Power = 0x66
+    POWER = 0x66
     # Keypad `=`.
-    KpEqual = 0x67
+    KP_EQUAL = 0x67
     F13 = 0x68
     F14 = 0x69
     F15 = 0x6A
@@ -177,105 +182,105 @@ class KeyCode(IntEnum):
     F22 = 0x71
     F23 = 0x72
     F24 = 0x73
-    Execute = 0x74
-    Help = 0x75
-    Menu = 0x76
-    Select = 0x77
-    Stop = 0x78
-    Again = 0x79
-    Undo = 0x7A
-    Cut = 0x7B
-    Copy = 0x7C
-    Paste = 0x7D
-    Find = 0x7E
-    Mute = 0x7F
-    VolUp = 0x80
-    VolDown = 0x81
+    EXECUTE = 0x74
+    HELP = 0x75
+    MENU = 0x76
+    SELECT = 0x77
+    STOP = 0x78
+    AGAIN = 0x79
+    UNDO = 0x7A
+    CUT = 0x7B
+    COPY = 0x7C
+    PASTE = 0x7D
+    FIND = 0x7E
+    MUTE = 0x7F
+    VOLUME_UP = 0x80
+    VOLUME_DOWN = 0x81
     # Deprecated.
-    LockingCapsLock = 0x82
+    LOCKING_CAPS_LOCK = 0x82
     # Deprecated.
-    LockingNumLock = 0x83
+    LOCKING_NUM_LOCK = 0x83
     # Deprecated.
-    LockingScrollLock = 0x84
+    LOCKING_SCROLL_LOCK = 0x84
     # Keypad `,`, also used for the brazilian keypad period (.) key.
-    KpComma = 0x85
+    KP_COMMA = 0x85
     # Used on AS/400 keyboard
-    KpEqualSign = 0x86
-    Intl1_RO = 0x87
-    Intl2_KATAKANAHIRAGANA = 0x88
-    Intl3_YEN = 0x89
-    Intl4_HENKAN = 0x8A
-    Intl5_MUHENKAN = 0x8B
-    Intl6_KPJPCOMMA = 0x8C
-    Intl7 = 0x8D
-    Intl8 = 0x8E
-    Intl9 = 0x8F
-    Lang1 = 0x90
-    Lang2 = 0x91
-    Lang3 = 0x92
-    Lang4 = 0x93
-    Lang5 = 0x94
-    Lang6 = 0x95
-    Lang7 = 0x96
-    Lang8 = 0x97
-    Lang9 = 0x98
-    AltErase = 0x99
-    SysReq = 0x9A
-    Cancel = 0x9B
-    Clear = 0x9C
-    Prior = 0x9D
-    Return = 0x9E
-    Separator = 0x9F
-    Out = 0xA0
-    Oper = 0xA1
-    ClearAgain = 0xA2
-    CrSel = 0xA3
-    ExSel = 0xA4
+    KP_EQUAL_SIGN = 0x86
+    INTL_1_RO = 0x87
+    INTL_2_KATAKANAHIRAGANA = 0x88
+    INTL_3_YEN = 0x89
+    INTL_4_HENKAN = 0x8A
+    INTL_5_MUHENKAN = 0x8B
+    INTL_6_KPJPCOMMA = 0x8C
+    INTL_7 = 0x8D
+    INTL_8 = 0x8E
+    INTL_9 = 0x8F
+    LANG_1 = 0x90
+    LANG_2 = 0x91
+    LANG_3 = 0x92
+    LANG_4 = 0x93
+    LANG_5 = 0x94
+    LANG_6 = 0x95
+    LANG_7 = 0x96
+    LANG_8 = 0x97
+    LANG_9 = 0x98
+    ALT_ERASE = 0x99
+    SYS_REQ = 0x9A
+    CANCEL = 0x9B
+    CLEAR = 0x9C
+    PRIOR = 0x9D
+    RETURN = 0x9E
+    SEPARATOR = 0x9F
+    OUT = 0xA0
+    OPER = 0xA1
+    CLEAR_AGAIN = 0xA2
+    CR_SEL = 0xA3
+    EX_SEL = 0xA4
     # According to QMK, 0xA5-0xDF are not usable on modern keyboards
     # Modifiers
     # Left Control.
-    LCtrl = 0xE0
+    L_CTRL = 0xE0
     # Left Shift.
-    LShift = 0xE1
+    L_SHIFT = 0xE1
     # Left Alt.
-    LAlt = 0xE2
+    L_ALT = 0xE2
     # Left GUI (the Windows key).
-    LGui = 0xE3
+    L_GUI = 0xE3
     # Right Control.
-    RCtrl = 0xE4
+    R_CTRL = 0xE4
     # Right Shift.
-    RShift = 0xE5
+    R_SHIFT = 0xE5
     # Right Alt (or Alt Gr).
-    RAlt = 0xE6
+    R_ALT = 0xE6
     # Right GUI (the Windows key).
-    RGui = 0xE7
+    R_GUI = 0xE7
     # Unofficial
-    MediaPlayPause = 0xE8
-    MediaStopCD = 0xE9
-    MediaPreviousSong = 0xEA
-    MediaNextSong = 0xEB
-    MediaEjectCD = 0xEC
-    MediaVolUp = 0xED
-    MediaVolDown = 0xEE
-    MediaMute = 0xEF
-    MediaWWW = 0xF0
-    MediaBack = 0xF1
-    MediaForward = 0xF2
-    MediaStop = 0xF3
-    MediaFind = 0xF4
-    MediaScrollUp = 0xF5
-    MediaScrollDown = 0xF6
-    MediaEdit = 0xF7
-    MediaSleep = 0xF8
-    MeidaCoffee = 0xF9
-    MediaRefresh = 0xFA
-    MediaCalc = 0xFB
+    MEDIA_PLAY_PAUSE = 0xE8
+    MEDIA_STOP_CD = 0xE9
+    MEDIA_PREVIOUS_SONG = 0xEA
+    MEDIA_NEXT_SONG = 0xEB
+    MEDIA_EJECT_CD = 0xEC
+    MEDIA_VOLUME_UP = 0xED
+    MEDIA_VOLUME_DOWN = 0xEE
+    MEDIA_MUTE = 0xEF
+    MEDIA_WWW = 0xF0
+    MEDIA_BACK = 0xF1
+    MEDIA_FORWARD = 0xF2
+    MEDIA_STOP = 0xF3
+    MEDIA_FIND = 0xF4
+    MEDIA_SCROLL_UP = 0xF5
+    MEDIA_SCROLL_DOWN = 0xF6
+    MEDIA_EDIT = 0xF7
+    MEDIA_SLEEP = 0xF8
+    MEDIA_COFFEE = 0xF9
+    MEDIA_REFRESH = 0xFA
+    MEDIA_CALC = 0xFB
 
     def is_modifier(self):
-        return KeyCode.LCtrl <= self <= KeyCode.RGui
+        return KeyCode.L_CTRL <= self <= KeyCode.R_GUI
 
     def as_modifier_bit(self):
         if self.is_modifier():
-            return 1 << (self - KeyCode.LCtrl)
+            return 1 << (self - KeyCode.L_CTRL)
         else:
             return 0

@@ -19,26 +19,44 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
 from typing import cast
 from .action import Action, Trans, NoOp, HoldTap, MultipleKeyCodes, Layer
 from .key_code import KeyCode
 from .key_event import EventQueue, KeyEvent, EventSince, EventIterator, KeyReleased, KeyPressed
 from .key_state import KeyState, NormalKey, LayerModifier
 from .key_switch import KeySwitch
+from .processor import Processor
 from .waiting_state import WaitingState
 
 
-class Evaluator:
+class StandardProcessor(Processor):
+    """標準的なプロセッサ
+    レイヤとHoldTapに対応。
+    タップダンスやマクロなどには対応していない
+
+    Keyberonからのベタ移植なので、仕組みはまだ分かっていない(^^;
+
+    Attributes
+    ----------
+    states:
+
+    waiting:
+
+    stacked:
+
+    """
 
     def __init__(self):
         self.states: [KeyState] = []
         self.waiting: [WaitingState] = []
         self.stacked = EventQueue(16)
 
-    def eval(self, event: KeyEvent):
+    def put(self, event: KeyEvent):
+        """
+        :param event: 処理するイベント
+        """
         # stackedに格納。あふれたものは、waiting_into_hold()へ
-        push_backed = self.stacked.push(EventSince(event))
+        push_backed = self.stacked.push(event)
         if push_backed is not None:
             self.waiting_into_hold()
             self.unstack(push_backed)

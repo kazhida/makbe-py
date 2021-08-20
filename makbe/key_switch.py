@@ -25,14 +25,23 @@ from .key_event import KeyEvent, KeyPressed, KeyReleased
 
 
 class Debouncer:
+    """KeySwitchが使うチャタリング防止機構
+    """
 
     def __init__(self, limit: int):
+        """規定回数を指定してオブジェクトを生成
+        :param limit: チャタリングではないと判定する回数
+        """
         self.current = False
         self.pressed = False
         self.count = 0
         self.limit = limit
 
     def update(self, pressed: bool) -> bool:
+        """状態更新
+        :param pressed: ピンの状態（ONならTrue）
+        :return: 変化があったらTrue
+        """
         if self.current == pressed:
             self.count = 0
             return False
@@ -51,15 +60,36 @@ class Debouncer:
 
 
 class KeySwitch:
+    """キースイッチ
+    アクションは複数レイヤに対応するため、アクションのリストで保持している
 
-    def __init__(self, actions: [Action],
+    Attributes
+    ----------
+    action:
+        対応するアクション（最下層に割り当てられる）
+    default:
+        未指定レイヤを使われたときのアクション
+    debounce:
+        チャタリング防止の回数
+    """
+
+    def __init__(self, action: Action,
                  default: Action = Trans(),
                  debounce: int = 5):
-        self.actions = actions
+        """
+        :param action: 対応するアクション（最下層に割り当てられる）
+        :param default: 未指定レイヤを使われたときのアクション
+        :param debounce: チャタリング防止の回数
+        """
+        self.actions = [action]
         self.default_action = default
         self.debouncer = Debouncer(debounce)
 
     def update(self, pressed: bool) -> KeyEvent:
+        """状態更新
+        :param pressed: ピンの状態（ONならTrue）
+        :return: 変化が無ければ、KeyPressedでもKeyReleasedでもないKeyEventを返す。変化があればそのイベントを返す。
+        """
         if not self.debouncer.update(pressed):
             return KeyEvent(self)
         elif self.debouncer.current:
@@ -68,11 +98,39 @@ class KeySwitch:
             return KeyReleased(self)
 
     def action(self, layer: int) -> Action:
+        """
+        :param layer: レイヤ番号
+        :return: 指定されたレイヤのアクションを返す
+        """
         if layer < len(self.actions):
             return self.actions[layer]
         else:
             return self.default_action
 
+    def append_action(self, action: Action):
+        """
+        :param action: 追加するアクション
+        :return: 自分自身を返す（メソッドチェイン用）
+        """
+        self.actions.append(action)
+        return self
 
-def dummy_switch() -> KeySwitch:
-    return KeySwitch([], NoOp())
+    def remove_layers(self, remove_all: bool = False):
+        """レイヤに割り当てられたアクションの除去
+        キーマップのカスタマイズに使用する
+        :param remove_all: 最下層のアクションも削除する
+        :return: 自分自身を返す（メソッドチェイン用）
+        """
+        if remove_all:
+            self.actions.clear()
+        else:
+            while len(self.actions) > 1:
+                self.actions.pop()
+        return self
+
+
+def nop_switch() -> KeySwitch:
+    """
+    :return: 何もしないキースイッチ（デフォルト値用）
+    """
+    return KeySwitch(NoOp(), NoOp())

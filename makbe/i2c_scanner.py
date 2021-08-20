@@ -19,25 +19,37 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
 from .key_event import KeyPressed, KeyReleased
 from .io_expander import IoExpander
-from .evaluator import Evaluator
+from .processor import Processor
+from .scanner import Scanner
 
 
-class I2CScanner:
+class I2CScanner(Scanner):
+    """I2Cを使用したスキャナ
+    moduloアーキテクチャに基づいたスキャナ
+    """
 
-    def __init__(self, devices: [IoExpander], i2c):
-        self.evaluator = Evaluator()
-        self.devices = devices
-        for d in devices:
+    def __init__(self, expanders: [IoExpander], i2c, processor: Processor):
+        """
+        :param expanders: I/Oエクスパンダのリスト
+        :param i2c: I2Cマスタ
+        :param processor: キーイベントを処理するオブジェクト
+        """
+        self.processor = processor
+        self.expanders = expanders
+        self.i2c = i2c
+        for d in expanders:
             d.init_device(i2c)
 
-    def scan(self, i2c):
-        for d in self.devices:
-            for i, p in enumerate(d.read_device(i2c)):
+    def scan(self):
+        """
+        I/Oエクスパンダをスキャンして、プロセッサに渡す
+        """
+        for d in self.expanders:
+            for i, p in enumerate(d.read_device(self.i2c)):
                 switch = d.switch(i)
                 if p:
-                    self.evaluator.eval(KeyPressed(switch))
+                    self.processor.put(KeyPressed(switch))
                 else:
-                    self.evaluator.eval(KeyReleased(switch))
+                    self.processor.put(KeyReleased(switch))

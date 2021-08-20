@@ -19,9 +19,17 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from .action import *
-from .io_expander import *
-from .expanders import *
-from .key_code import *
-from .key_switch import *
-from .i2c_scanner import *
+from abc import ABCMeta, abstractmethod
+
+
+class Scanner(metaclass=ABCMeta):
+    """キースキャンをするクラス
+    このクラスを継承したクラスで、スキャン時の動作を定義する
+    """
+
+    @abstractmethod
+    def scan(self):
+        """
+        スキャンする
+        """
+        pass

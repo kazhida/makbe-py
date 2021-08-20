@@ -20,3 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+  dummies
+"""
+
+
+class Keyboard:
+    def __init__(self, devices):
+        self.devices = devices

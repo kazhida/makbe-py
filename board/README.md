@@ -1,0 +1,4 @@
+# Dummy package of CircuitPython
+
+ここにあるのは、CircuitPythonに含まれるパッケージのダミーです。
+IDEの静的解析でエラーにならないようにするために実装されているので、実際に使用するMCUにはコピーしないでください。
