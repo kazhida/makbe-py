@@ -111,12 +111,14 @@ class Column13ansi:
         expander.assign(3, self.sw.kb_e)
         expander.assign(4, self.sw.kb_r)
         expander.assign(5, self.sw.kb_t)
+
         expander.assign(8, self.sw.tab)
         expander.assign(9, self.sw.kb_a)
         expander.assign(10, self.sw.kb_s)
         expander.assign(11, self.sw.kb_d)
         expander.assign(12, self.sw.kb_f)
         expander.assign(13, self.sw.kb_g)
+
         self.expanders.append(expander)
 
         # キーの割り当て、2つ目
@@ -163,7 +165,7 @@ class Column13ansi:
         expander.assign(9, self.sw.r_gui)
         expander.assign(10, self.sw.r_alt)
         expander.assign(11, self.sw.left)
-        expander.assign(12, self.sw.dot)
+        expander.assign(12, self.sw.down)
         expander.assign(13, self.sw.right)
         self.expanders.append(expander)
 
