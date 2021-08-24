@@ -75,7 +75,7 @@ class KeySwitch:
 
     def __init__(self, action: Action,
                  default: Action = Trans(),
-                 debounce: int = 5):
+                 debounce: int = 2):
         """
         :param action: 対応するアクション（最下層に割り当てられる）
         :param default: 未指定レイヤを使われたときのアクション

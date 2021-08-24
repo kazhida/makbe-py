@@ -19,7 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from .. import nop_switch, IoExpander, KeySwitch
+from .. key_switch import nop_switch
+from .. import IoExpander, KeySwitch
 
 
 class TCA9554(IoExpander):
@@ -41,7 +42,7 @@ class TCA9554(IoExpander):
         :param i2c: I2Cマスタ
         :return: Trueを返す
         """
-        i2c.writeto(self.dev_address, bytes([0x03, 0xFF]), True)
+        i2c.writeto(self.dev_address, bytes([0x03, 0xFF]))
         return True
 
     def read_device(self, i2c) -> [bool]:
@@ -49,16 +50,15 @@ class TCA9554(IoExpander):
         :param i2c: I2Cマスタ
         :return: 各ピンの状態（ONでTrue）のリストを返す
         """
-        i2c.writeto(self.dev_address, bytes([0x00]), False)
         buffer = bytearray(1)
-        i2c.readfrom_into(self.dev_address, buffer)
+        i2c.writeto_then_readfrom(self.dev_address, bytes([0x00]), buffer)
         result = []
         for p in range(8):
             mask = 1 << p
             if buffer[0] & mask != 0:
-                result.append(True)
-            else:
                 result.append(False)
+            else:
+                result.append(True)
         return result
 
     def assign(self, pin: int, switch: KeySwitch):

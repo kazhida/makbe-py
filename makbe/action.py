@@ -45,7 +45,7 @@ class NoOp(Action):
     """
 
     def __init__(self):
-        super(NoOp, self).__init__(self)
+        pass
 
 
 class Trans(Action):
@@ -53,7 +53,7 @@ class Trans(Action):
     """
 
     def __init__(self):
-        super(Trans, self).__init__(self)
+        pass
 
 
 class SingleKeyCode(Action):

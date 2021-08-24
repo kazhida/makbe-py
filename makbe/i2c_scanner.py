@@ -49,7 +49,5 @@ class I2CScanner(Scanner):
         for d in self.expanders:
             for i, p in enumerate(d.read_device(self.i2c)):
                 switch = d.switch(i)
-                if p:
-                    self.processor.put(KeyPressed(switch))
-                else:
-                    self.processor.put(KeyReleased(switch))
+                event = switch.update(p)
+                self.processor.put(event)

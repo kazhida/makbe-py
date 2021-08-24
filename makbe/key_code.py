@@ -20,10 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from enum import IntEnum
-
-
-class KeyCode(IntEnum):
+class KeyCode:
     """キーコード
     CircuitPythonにadafruit_hid.keyboard.KeyCodeがあるが、
     ここではCircuitPythonに依存したくないので、独自に定義している
@@ -276,11 +273,13 @@ class KeyCode(IntEnum):
     MEDIA_REFRESH = 0xFA
     MEDIA_CALC = 0xFB
 
-    def is_modifier(self):
-        return KeyCode.L_CTRL <= self <= KeyCode.R_GUI
+    @staticmethod
+    def is_modifier(key_code: int):
+        return KeyCode.L_CTRL <= key_code <= KeyCode.R_GUI
 
-    def as_modifier_bit(self):
-        if self.is_modifier():
-            return 1 << (self - KeyCode.L_CTRL)
+    @staticmethod
+    def as_modifier_bit(key_code: int):
+        if KeyCode.is_modifier(key_code):
+            return 1 << (key_code - KeyCode.L_CTRL)
         else:
             return 0

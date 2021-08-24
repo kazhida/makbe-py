@@ -19,7 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from .. import IoExpander, KeySwitch, nop_switch
+from .. key_switch import nop_switch
+from .. import IoExpander, KeySwitch
 
 
 class TCA9555(IoExpander):
@@ -41,8 +42,8 @@ class TCA9555(IoExpander):
         :param i2c: I2Cマスタ
         :return: Trueを返す
         """
-        i2c.writeto(self.dev_address, bytes([0x06, 0xFF]), True)
-        i2c.writeto(self.dev_address, bytes([0x07, 0xFF]), True)
+        i2c.writeto(self.dev_address, bytes([0x06, 0xFF]))
+        i2c.writeto(self.dev_address, bytes([0x07, 0xFF]))
         return True
 
     def read_device(self, i2c) -> [bool]:
@@ -50,17 +51,16 @@ class TCA9555(IoExpander):
         :param i2c: I2Cマスタ
         :return: 各ピンの状態（ONでTrue）のリストを返す
         """
-        i2c.writeto(self.dev_address, bytes([0x00]), False)
         buffer = bytearray(2)
-        i2c.readfrom_into(self.dev_address, buffer)
+        i2c.writeto_then_readfrom(self.dev_address, bytes([0x00]), buffer)
         result = []
         for i, b in enumerate(buffer):
             for p in range(8):
                 mask = 1 << p
                 if buffer[i] & mask != 0:
-                    result.append(True)
-                else:
                     result.append(False)
+                else:
+                    result.append(True)
         return result
 
     def assign(self, pin: int, switch: KeySwitch):

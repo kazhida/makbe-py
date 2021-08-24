@@ -20,15 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .key_switch import KeySwitch
-
-
 class KeyEvent(object):
     """キーイベントの基底クラス
     KeyPressedとKeyReleasedがこれを継承している
     """
 
-    def __init__(self, switch: KeySwitch):
+    def __init__(self, switch):
         """
         :param switch: 割り当てるキースイッチ
         """
@@ -51,7 +48,7 @@ class KeyPressed(KeyEvent):
     """キーが押されたときのイベント
     """
 
-    def __init__(self, switch: KeySwitch):
+    def __init__(self, switch):
         """
         :param switch: 割り当てるキースイッチ
         """
@@ -68,7 +65,7 @@ class KeyReleased(KeyEvent):
     """キーが話されたときのイベント
     """
 
-    def __init__(self, switch: KeySwitch):
+    def __init__(self, switch):
         """
         :param switch: 割り当てるキースイッチ
         """

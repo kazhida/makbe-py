@@ -19,11 +19,15 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from board import *
-from busio import I2C
+
 import usb_hid
+from board import SDA, SCL
+from busio import I2C
 from adafruit_hid.keyboard import Keyboard
-from makbe import I2CScanner, KeySwitch, k, KeyCode, TCA9555
+
+from makbe.i2c_scanner import I2CScanner
+from makbe.key_switch import KeySwitch
+from makbe import k, KeyCode, TCA9555
 from makbe.modeless_processor import ModelessProcessor
 
 
@@ -46,6 +50,7 @@ class Switches:
         self.kb_p = KeySwitch(k(KeyCode.KB_P))
         self.minus = KeySwitch(k(KeyCode.MINUS))
         self.back_space = KeySwitch(k(KeyCode.BACK_SPACE))
+
         self.tab = KeySwitch(k(KeyCode.TAB))
         self.kb_a = KeySwitch(k(KeyCode.KB_A))
         self.kb_s = KeySwitch(k(KeyCode.KB_S))
@@ -58,10 +63,11 @@ class Switches:
         self.kb_l = KeySwitch(k(KeyCode.KB_L))
         self.semi_colon = KeySwitch(k(KeyCode.SEMI_COLON))
         self.enter = KeySwitch(k(KeyCode.ENTER))
+
         self.l_shift = KeySwitch(k(KeyCode.L_SHIFT))
         self.kb_z = KeySwitch(k(KeyCode.KB_Z))
         self.kb_x = KeySwitch(k(KeyCode.KB_X))
-        self.kb_c = KeySwitch(k(KeyCode.KB_S))
+        self.kb_c = KeySwitch(k(KeyCode.KB_C))
         self.kb_v = KeySwitch(k(KeyCode.KB_V))
         self.kb_b = KeySwitch(k(KeyCode.KB_B))
         self.kb_n = KeySwitch(k(KeyCode.KB_N))
@@ -70,6 +76,7 @@ class Switches:
         self.dot = KeySwitch(k(KeyCode.DOT))
         self.up = KeySwitch(k(KeyCode.UP))
         self.slash = KeySwitch(k(KeyCode.SLASH))
+
         self.l_ctrl = KeySwitch(k(KeyCode.L_CTRL))
         self.l_gui = KeySwitch(k(KeyCode.L_GUI))
         self.delete = KeySwitch(k(KeyCode.DELETE))
@@ -92,7 +99,6 @@ class Column13ansi:
         キースイッチクラスタを生成し、I2CScannerを使うのでI/Oエクスパンダにそれを割り当ててて、
         とりあえず、ModelessProcessorで処理するようにしている
         """
-
         # スイッチとI/Oエクスパンダのリストを生成
         self.sw = Switches()
         self.expanders = []
@@ -114,7 +120,22 @@ class Column13ansi:
         self.expanders.append(expander)
 
         # キーの割り当て、2つ目
-        expander = TCA9555(0x00)
+        expander = TCA9555(0x01)
+        expander.assign(0, self.sw.l_shift)
+        expander.assign(1, self.sw.kb_z)
+        expander.assign(2, self.sw.kb_x)
+        expander.assign(3, self.sw.kb_c)
+        expander.assign(4, self.sw.kb_v)
+        expander.assign(5, self.sw.kb_b)
+        expander.assign(8, self.sw.l_ctrl)
+        expander.assign(9, self.sw.l_gui)
+        expander.assign(10, self.sw.delete)
+        expander.assign(11, self.sw.l_alt)
+        expander.assign(12, self.sw.l_space)
+        self.expanders.append(expander)
+
+        # キーの割り当て、3つ目
+        expander = TCA9555(0x02)
         expander.assign(0, self.sw.kb_y)
         expander.assign(1, self.sw.kb_u)
         expander.assign(2, self.sw.kb_i)
@@ -130,23 +151,8 @@ class Column13ansi:
         expander.assign(13, self.sw.enter)
         self.expanders.append(expander)
 
-        # キーの割り当て、3つ目
-        expander = TCA9555(0x00)
-        expander.assign(0, self.sw.l_shift)
-        expander.assign(1, self.sw.kb_z)
-        expander.assign(2, self.sw.kb_x)
-        expander.assign(3, self.sw.kb_c)
-        expander.assign(4, self.sw.kb_v)
-        expander.assign(5, self.sw.kb_b)
-        expander.assign(8, self.sw.l_ctrl)
-        expander.assign(9, self.sw.l_gui)
-        expander.assign(10, self.sw.delete)
-        expander.assign(11, self.sw.l_alt)
-        expander.assign(12, self.sw.l_space)
-        self.expanders.append(expander)
-
         # キーの割り当て、4つ目
-        expander = TCA9555(0x00)
+        expander = TCA9555(0x03)
         expander.assign(0, self.sw.kb_n)
         expander.assign(1, self.sw.kb_m)
         expander.assign(2, self.sw.comma)
@@ -162,7 +168,7 @@ class Column13ansi:
         self.expanders.append(expander)
 
         # I2Cマスタの生成
-        i2c = I2C(SDA, SCL)
+        i2c = I2C(SCL, SDA)
         while not i2c.try_lock():
             pass
 

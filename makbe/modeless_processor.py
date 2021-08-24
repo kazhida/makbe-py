@@ -41,6 +41,8 @@ class ModelessProcessor(Processor):
         :param event: 処理するイベント
         """
         if isinstance(event, KeyPressed):
-            self.kbd.press(event.switch.action(0).key_codes())
+            print(str(event))
+            # self.kbd.press(*event.switch.action(0).key_codes())
         if isinstance(event, KeyReleased):
-            self.kbd.release(event.switch.action(0).key_codes())
+            print(str(event))
+            # self.kbd.release(*event.switch.action(0).key_codes())

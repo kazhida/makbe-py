@@ -19,16 +19,13 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from abc import ABCMeta, abstractmethod
-
 from .key_switch import KeySwitch
 
 
-class IoExpander(metaclass=ABCMeta):
+class IoExpander:
     """I/Oエクスパンダのインターフェース
     """
 
-    @abstractmethod
     def init_device(self, i2c) -> bool:
         """I2Cの初期化
         :param i2c: I2Cマスタ
@@ -36,7 +33,6 @@ class IoExpander(metaclass=ABCMeta):
         """
         pass
 
-    @abstractmethod
     def read_device(self, i2c) -> [bool]:
         """I/Oエクスパンダを読み込んで、その状態を返す
         :param i2c: I2Cマスタ
@@ -44,7 +40,6 @@ class IoExpander(metaclass=ABCMeta):
         """
         pass
 
-    @abstractmethod
     def assign(self, pin: int, switch: KeySwitch):
         """ピンにキースイッチを割り当てる
         :param pin: ピン番号（0オリジン）
@@ -52,7 +47,6 @@ class IoExpander(metaclass=ABCMeta):
         """
         pass
 
-    @abstractmethod
     def switch(self, pin: int) -> KeySwitch:
         """ピンに対応するキースイッチを返す
         :param pin: ピン番号（0オリジン）
