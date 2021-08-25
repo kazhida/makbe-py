@@ -41,8 +41,11 @@ class KeyState:
         else:
             return None
 
+    def tick(self) -> bool:
+        return False
 
-class NormalKey(KeyState):
+
+class NormalKeyState(KeyState):
 
     def __init__(self, keycode: KeyCode, switch: KeySwitch):
         super().__init__(switch)
@@ -51,8 +54,11 @@ class NormalKey(KeyState):
     def key_code(self):
         return self.keycode
 
+    def tick(self) -> bool:
+        return True
 
-class LayerModifier(KeyState):
+
+class LayerModifierState(KeyState):
 
     def __init__(self, layer: int, switch: KeySwitch):
         super().__init__(switch)
@@ -60,3 +66,6 @@ class LayerModifier(KeyState):
 
     def get_layer(self):
         return self.layer
+
+    def tick(self) -> bool:
+        return True

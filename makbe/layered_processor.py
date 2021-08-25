@@ -19,43 +19,31 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from typing import cast
 from .action import Action, Trans, NoOp, HoldTap, MultipleKeyCodes, Layer
 from .key_code import KeyCode
 from .key_event import EventQueue, KeyEvent, EventSince, EventIterator, KeyReleased, KeyPressed
-from .key_state import KeyState, NormalKey, LayerModifier
+from .key_state import KeyState, NormalKeyState, LayerModifierState
 from .key_switch import KeySwitch
 from .processor import Processor
 from .waiting_state import WaitingState
 
 
-class StandardProcessor(Processor):
+class LayeredProcessor(Processor):
     """標準的なプロセッサ
     レイヤとHoldTapに対応。
     タップダンスやマクロなどには対応していない
-
     Keyberonからのベタ移植なので、仕組みはまだ分かっていない(^^;
-
-    Attributes
-    ----------
-    states:
-
-    waiting:
-
-    stacked:
-
     """
 
     def __init__(self):
         self.states: [KeyState] = []
-        self.waiting: [WaitingState] = []
+        self.waiting: [WaitingState] = []   # Optionの代わりに、要素1つまたは0の配列を使う
         self.stacked = EventQueue(16)
 
     def put(self, event: KeyEvent):
         """
         :param event: 処理するイベント
         """
-        # stackedに格納。あふれたものは、waiting_into_hold()へ
         push_backed = self.stacked.push(event)
         if push_backed is not None:
             self.waiting_into_hold()
@@ -108,10 +96,8 @@ class StandardProcessor(Processor):
             self.do_action(tap, switch, 0)
 
     def unstack(self, stacked: EventSince):
-
         if isinstance(stacked.event, KeyReleased):
             self.states = filter(lambda s: s is not None, map(lambda s: s.release(stacked.event.switch), self.states))
-
         if isinstance(stacked.event, KeyPressed):
             action = self.press_as_action(stacked.event.switch, self.current_layer())
             self.do_action(action, stacked.event.switch, stacked.since)
@@ -139,17 +125,17 @@ class StandardProcessor(Processor):
     def do_action(self, action: Action, switch: KeySwitch, delay: int):
 
         if action is KeyCode:
-            self.states.append(NormalKey(action.key_codes()[0], switch))
+            self.states.append(NormalKeyState(action.key_codes()[0], switch))
 
         if action is MultipleKeyCodes:
             for kc in action.key_codes():
-                self.states.append(NormalKey(kc, switch))
+                self.states.append(NormalKeyState(kc, switch))
 
         if action is Layer:
-            self.states.append(LayerModifier(action.layer(), switch))
+            self.states.append(LayerModifierState(action.layer(), switch))
 
         if action is HoldTap:
-            hold_tap = cast(HoldTap, action)
+            hold_tap: HoldTap = action
             hold = hold_tap.hold
             tap = hold_tap.tap
             timeout = hold_tap.timeout

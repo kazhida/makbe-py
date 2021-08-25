@@ -36,7 +36,7 @@ class WaitingState:
         self.hold = hold
         self.tap = tap
 
-    def tick(self):
+    def tick(self) -> bool:
         self.timeout -= 1
         return self.timeout <= 0
 
