@@ -134,3 +134,6 @@ def nop_switch() -> KeySwitch:
     :return: 何もしないキースイッチ（デフォルト値用）
     """
     return KeySwitch(NoOp(), NoOp())
+
+
+EMPTY_SWITCH = KeySwitch(NoOp(), NoOp())

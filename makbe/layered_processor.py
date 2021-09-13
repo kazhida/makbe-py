@@ -34,11 +34,11 @@ class LayeredProcessor(Processor):
     タップダンスやマクロなどには対応していない
     Keyberonからのベタ移植なので、仕組みはまだ分かっていない(^^;
     """
-
-    def __init__(self):
+    def __init__(self, kbd):
         self.states: [KeyState] = []
-        self.waiting: [WaitingState] = []   # Optionの代わりに、要素1つまたは0の配列を使う
+        self.waiting: WaitingState = WaitingState.empty()
         self.stacked = EventQueue(16)
+        self.kbd = kbd
 
     def put(self, event: KeyEvent):
         """
@@ -46,54 +46,26 @@ class LayeredProcessor(Processor):
         """
         push_backed = self.stacked.push(event)
         if push_backed is not None:
-            self.waiting_into_hold()
+            self.waiting.do_hold(lambda a, s, d: self.do_action(a, s, d))
             self.unstack(push_backed)
         # waiting_stateにあれば、waiting_into_tap()へ
-        waiting_state = self.waiting_state_or_none()
-        if waiting_state and waiting_state.is_corresponding_release:
-            self.waiting_into_tap()
+        if self.waiting.is_corresponding_release(event):
+            self.waiting.do_tap(lambda a, s, d: self.do_action(a, s, d))
+        self.send_codes()
 
     def tick(self):
         # statesを正規化して、それぞれにtick()
         self.states = filter(lambda st: st is not None, self.states)
         for s in EventIterator(self.stacked):
             s.tick()
-
-        waiting_state = self.waiting_state_or_none()
-        if waiting_state:
-            self.waiting_into_tap()
-        if waiting_state is None:
-            stacked = self.stacked.pop()
-            if stacked is not None:
-                self.unstack(stacked)
+        if self.waiting.is_not_empty():
+            if self.waiting.tick():
+                self.waiting.do_hold(lambda a, s, d: self.do_action(a, s, d))
         else:
-            if waiting_state.tick():
-                self.waiting_into_hold()
-        return self.keycodes()
-
-    def waiting_state_or_none(self):
-        if self.waiting.count(WaitingState) > 0:
-            # waiting_stateがあればそれを返す
-            return self.waiting[0]
-        else:
-            # 無ければ、Noneを返す
-            return None
-
-    def waiting_into_hold(self):
-        waiting_state = self.waiting_state_or_none()
-        if waiting_state:
-            hold = waiting_state.hold
-            switch = waiting_state.switch
-            self.waiting.clear()
-            self.do_action(hold, switch, 0)
-
-    def waiting_into_tap(self):
-        waiting_state = self.waiting_state_or_none()
-        if waiting_state:
-            tap = waiting_state.tap
-            switch = waiting_state.switch
-            self.waiting.clear()
-            self.do_action(tap, switch, 0)
+            s = self.stacked.pop()
+            if s is not None:
+                self.unstack(s)
+        self.send_codes()
 
     def unstack(self, stacked: EventSince):
         if isinstance(stacked.event, KeyReleased):
@@ -102,8 +74,13 @@ class LayeredProcessor(Processor):
             action = self.press_as_action(stacked.event.switch, self.current_layer())
             self.do_action(action, stacked.event.switch, stacked.since)
 
-    def keycodes(self):
-        return filter(lambda s: s is not None, map(lambda s: s.key_code, self.states))
+    def send_codes(self):
+        codes = []
+        for s in self.states:
+            kc = s.key_code
+            if kc is not None:
+                codes.append(kc)
+        self.kbd.send(codes)
 
     def current_layer(self) -> int:
         layers = filter(lambda ly: ly is not None, map(lambda st: st.get_layer, self.states))
@@ -143,6 +120,6 @@ class LayeredProcessor(Processor):
             for event in EventIterator(self.stacked):
                 if self.waiting.is_corresponding_release(event):
                     if timeout < delay - event.since:
-                        self.waiting_into_hold()
+                        self.waiting.do_hold(lambda a, s, d: self.do_action(a, s, d))
                     else:
-                        self.waiting_into_tap()
+                        self.waiting.do_tap(lambda a, s, d: self.do_action(a, s, d))

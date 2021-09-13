@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from .key_event import KeyPressed, KeyReleased
+from .key_event import KeyPressed, KeyReleased, KeyEvent
 from .io_expander import IoExpander
 from .processor import Processor
 from .scanner import Scanner
@@ -50,4 +50,8 @@ class I2CScanner(Scanner):
             for i, p in enumerate(d.read_device(self.i2c)):
                 switch = d.switch(i)
                 event = switch.update(p)
-                self.processor.put(event)
+                if isinstance(event, KeyPressed):
+                    self.processor.put(event)
+                if isinstance(event, KeyReleased):
+                    self.processor.put(event)
+        self.processor.tick()

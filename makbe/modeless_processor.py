@@ -42,7 +42,10 @@ class ModelessProcessor(Processor):
         """
         if isinstance(event, KeyPressed):
             print(str(event))
-            # self.kbd.press(*event.switch.action(0).key_codes())
+            self.kbd.press(*event.switch.action(0).key_codes())
         if isinstance(event, KeyReleased):
             print(str(event))
-            # self.kbd.release(*event.switch.action(0).key_codes())
+            self.kbd.release(*event.switch.action(0).key_codes())
+
+    def tick(self):
+        pass

@@ -25,8 +25,15 @@ from makbe import KeyEvent
 class Processor:
     """プロセッサの基底クラス
     """
+
     def put(self, event: KeyEvent):
         """
         :param event: 処理するイベント
+        """
+        pass
+
+    def tick(self):
+        """
+        一通りのイベントをput()で渡した後に、定期的に呼び出すメソッド
         """
         pass

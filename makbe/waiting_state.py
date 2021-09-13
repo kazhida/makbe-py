@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .action import Action
+from .action import Action, NoOp
 from .key_event import KeyEvent
-from .key_switch import KeySwitch
+from .key_switch import KeySwitch, EMPTY_SWITCH
 
 
 class WaitingState:
@@ -36,9 +36,33 @@ class WaitingState:
         self.hold = hold
         self.tap = tap
 
+    def is_empty(self) -> bool:
+        return self.switch is EMPTY_SWITCH
+
+    def is_not_empty(self) -> bool:
+        return not self.is_empty()
+
     def tick(self) -> bool:
         self.timeout -= 1
         return self.timeout <= 0
 
     def is_corresponding_release(self, event: KeyEvent):
-        return event.is_released() and event.switch == self.switch
+        return event.is_released() and event.switch == self.switch and self.switch is not EMPTY_SWITCH
+
+    def do_tap(self, do_action):
+        if self.is_not_empty():
+            tap = self.tap
+            switch = self.switch
+            self.switch = EMPTY_SWITCH
+            do_action(tap, switch, 0)
+
+    def do_hold(self, do_action):
+        if self.is_not_empty():
+            hold = self.hold
+            switch = self.switch
+            self.switch = EMPTY_SWITCH
+            do_action(hold, switch, 0)
+
+    @staticmethod
+    def empty():
+        return WaitingState(EMPTY_SWITCH, 0, NoOp(), NoOp())
