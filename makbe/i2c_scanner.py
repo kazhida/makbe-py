@@ -23,6 +23,7 @@ from .key_event import KeyPressed, KeyReleased, KeyEvent
 from .io_expander import IoExpander
 from .processor import Processor
 from .scanner import Scanner
+from time import monotonic_ns
 
 
 class I2CScanner(Scanner):
@@ -46,12 +47,13 @@ class I2CScanner(Scanner):
         """
         I/Oエクスパンダをスキャンして、プロセッサに渡す
         """
+        now = monotonic_ns()
         for d in self.expanders:
             for i, p in enumerate(d.read_device(self.i2c)):
                 switch = d.switch(i)
                 event = switch.update(p)
                 if isinstance(event, KeyPressed):
-                    self.processor.put(event)
+                    self.processor.put(event, now)
                 if isinstance(event, KeyReleased):
-                    self.processor.put(event)
-        self.processor.tick()
+                    self.processor.put(event, now)
+        self.processor.tick(now)

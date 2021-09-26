@@ -19,37 +19,39 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from . import KeySwitch
 from .key_code import KeyCode
+from time import monotonic_ns
 
 
 class Action:
-    """キーアクションの基底クラス
+    """ キーアクションの基底クラス
     実際のアクションはこのクラスを継承したクラスです。
     """
 
-    def layer(self):
-        """レイヤに関係するのであれば、そのレイヤ番号を返す
+    def layer_no(self):
+        """ レイヤに関係するのであれば、そのレイヤ番号を返す
         :return: None レイヤーは関係しない
         """
         return None
 
     def key_codes(self):
-        """キーコードに関係するのであれば、そのリストを返す
+        """ キーコードに関係するのであれば、そのリストを返す
         :return: [] 空配列を返す
         """
         return []
 
 
-class NoOp(Action):
-    """なにもしないアクション
+class NoOpAction(Action):
+    """ なにもしないアクション
     """
 
     def __init__(self):
         pass
 
 
-class Trans(Action):
-    """下層のレイヤのアクションを踏襲する
+class TransAction(Action):
+    """ デフォルトレイヤのアクションを踏襲する
     """
 
     def __init__(self):
@@ -57,7 +59,7 @@ class Trans(Action):
 
 
 class SingleKeyCode(Action):
-    """1つ分のキーコードを割り当てられたアクション
+    """ 1つ分のキーコードを割り当てられたアクション
     """
 
     def __init__(self, code: KeyCode):
@@ -74,7 +76,7 @@ class SingleKeyCode(Action):
 
 
 class MultipleKeyCodes(Action):
-    """複数のキーコードを割り当てられたアクション
+    """ 複数のキーコードを割り当てられたアクション
     """
 
     def __init__(self, codes: [KeyCode]):
@@ -90,8 +92,8 @@ class MultipleKeyCodes(Action):
         return self.codes
 
 
-class Layer(Action):
-    """レイヤを切り替えるアクション
+class LayerAction(Action):
+    """ レイヤを切り替えるアクション
     """
 
     def __init__(self, layer: int):
@@ -100,7 +102,7 @@ class Layer(Action):
         """
         self.layer = layer
 
-    def layer(self):
+    def layer_no(self):
         """
         :return: 割り当てられたレイヤ番号を返す
         """
@@ -108,8 +110,7 @@ class Layer(Action):
 
 
 class DefaultLayer(Action):
-    """デフォルトレイヤの切り替え
-    not implemented
+    """ デフォルトレイヤの切り替え
     """
 
     def __init__(self, layer: int):
@@ -118,15 +119,15 @@ class DefaultLayer(Action):
         """
         self.layer = layer
 
-    def layer(self):
+    def layer_no(self):
         """
         :return: 割り当てられたレイヤ番号
         """
         return self.layer
 
 
-class HoldTap(Action):
-    """特定時間押しっぱなしにした場合（hold）とそれ以前に話したとき(tap)、それぞれにアクションを割り当てるアクション
+class HoldTapAction(Action):
+    """ 特定時間押しっぱなしにした場合（hold）とそれ以前に話したとき(tap)、それぞれにアクションを割り当てるアクション
     """
 
     def __init__(self, hold: Action, tap: Action, timeout: int = 200):
@@ -137,7 +138,17 @@ class HoldTap(Action):
         """
         self.hold = hold
         self.tap = tap
-        self.timeout = timeout
+        self.timeout = timeout * 1000 * 1000
+
+
+class WaitingAction(HoldTapAction):
+    """ HoldTapActionに発生時刻を加えたもの
+    """
+
+    def __init__(self, hold_tap: HoldTapAction, switch: KeySwitch):
+        super(WaitingAction, self).__init__(hold_tap.hold, hold_tap.tap, hold_tap.timeout)
+        self.since = monotonic_ns()
+        self.switch = switch
 
 
 def k(kc: KeyCode) -> Action:
@@ -148,7 +159,17 @@ def k(kc: KeyCode) -> Action:
     return SingleKeyCode(kc)
 
 
-def m(kcs: [KeyCode]) -> Action:
+def m(km: KeyCode, kc: KeyCode) -> Action:
+    """
+    :param km: キーコード（モディファイア）
+    :param kc: キーコード
+    :return: 割り当てられたキーコードのSingleKeyCodeアクションを返す
+    """
+    mb = KeyCode.as_modifier_bit(km)
+    return SingleKeyCode(mb | kc)
+
+
+def multi(kcs: [KeyCode]) -> Action:
     """
     :param kcs:キーコードのリスト
     :return: 割り当てられたキーコードのMultipleKeyCodesアクションを返す
@@ -161,7 +182,7 @@ def la(layer: int) -> Action:
     :param layer: レイヤ番号
     :return: 割り当てられたレイヤ番号のLayerアクションを返す
     """
-    return Layer(layer)
+    return LayerAction(layer)
 
 
 def d(layer: int) -> Action:
@@ -178,7 +199,7 @@ def lt(layer:int, kc: KeyCode) -> Action:
     :param kc: キーコード
     :return: holdでレイヤ切り替え、tapでキーコードのHoldTapアクションを返す
     """
-    return HoldTap(la(layer), SingleKeyCode(kc))
+    return HoldTapAction(la(layer), SingleKeyCode(kc))
 
 
 def mt(modifier: KeyCode, kc: KeyCode) -> Action:
@@ -187,4 +208,4 @@ def mt(modifier: KeyCode, kc: KeyCode) -> Action:
     :param kc: キーコード
     :return: holdでモディファイア、taoでキーコードのHoldTapアクションを返す
     """
-    return HoldTap(SingleKeyCode(modifier), SingleKeyCode(kc))
+    return HoldTapAction(SingleKeyCode(modifier), SingleKeyCode(kc))

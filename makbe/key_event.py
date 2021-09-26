@@ -19,6 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from time import monotonic_ns
+
 
 class KeyEvent(object):
     """キーイベントの基底クラス
@@ -87,97 +89,4 @@ class EventSince:
         :param event: キーイベント
         """
         self.event = event
-        self.since = 0
-
-    def tick(self):
-        """経過時間のインクリメント
-        """
-        self.since += 1
-
-
-class EventQueue:
-    """サイズ固定のリングバッファ
-    イベントと経過時間を一定数保持するバッファ
-    """
-
-    def __init__(self, size: int):
-        """
-        :param size: バッファサイズ
-        """
-        self.buffer = []
-        self.size = size
-        self.tail = 0
-        self.head = 0
-
-    def push(self, event: KeyEvent):
-        """イベントの追加
-        :param event: キーイベント
-        :return: サイズからあふれたらそれを返す、そうでなければNoneを返す
-        """
-        head_at = self.head % self.size
-        tail_at = self.tail % self.size
-        if self.tail < self.size:
-            result = None
-        else:
-            result = self.buffer[head_at]
-            self.head += 1
-        self.buffer[tail_at] = EventSince(event)
-        self.tail += 1
-        return result
-
-    def pop(self):
-        """
-        :return: バッファの先頭を取り出す
-        """
-        if self.tail == 0:
-            return None
-        elif self.head < self.tail:
-            result = self.buffer[self.head % self.size]
-            self.head += 1
-            return result
-        else:
-            return None
-
-    def count(self) -> int:
-        """
-        :return: バッファ無いのイベント数を返す
-        """
-        return min(self.tail, self.size)
-
-    def get(self, index: int):
-        """
-        :param index: 位置（0オリジン）
-        :return: EventSince 指定位置のイベント（経過時間付き）
-        """
-        if self.tail == 0:
-            return None
-        elif self.head < self.tail:
-            index += self.head
-            index %= self.size
-            return self.buffer[index]
-        else:
-            return None
-
-
-class EventIterator(object):
-    """EventQueueのイテレータ
-    """
-
-    def __init__(self, queue: EventQueue):
-        """
-        :param queue:  EventQueue
-        """
-        self.queue = queue
-        self.index = 0
-
-    def __iter__(self):
-        # __next__()はselfが実装してるのでそのままselfを返す
-        return self
-
-    def __next__(self):  # Python2だと next(self) で定義
-        if self.index < self.queue.count():
-            result = self.queue.get(self.index)
-            self.index += 1
-            return result
-        else:
-            raise StopIteration()
+        self.since = monotonic_ns()

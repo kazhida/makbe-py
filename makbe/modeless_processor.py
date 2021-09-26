@@ -35,10 +35,11 @@ class ModelessProcessor(Processor):
         """
         self.kbd = kbd
 
-    def put(self, event: KeyEvent):
+    def put(self, event: KeyEvent, now: int):
         """イベントの処理
         イベントをそのままKeyboardに渡す
         :param event: 処理するイベント
+        :param now: 現在時刻に相当する数値（ns単位）
         """
         if isinstance(event, KeyPressed):
             print(str(event))
@@ -47,5 +48,5 @@ class ModelessProcessor(Processor):
             print(str(event))
             self.kbd.release(*event.switch.action(0).key_codes())
 
-    def tick(self):
+    def tick(self, now: int):
         pass

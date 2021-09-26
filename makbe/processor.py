@@ -26,13 +26,13 @@ class Processor:
     """プロセッサの基底クラス
     """
 
-    def put(self, event: KeyEvent):
+    def put(self, event: KeyEvent, now: int):
         """
         :param event: 処理するイベント
         """
         pass
 
-    def tick(self):
+    def tick(self, now: int):
         """
         一通りのイベントをput()で渡した後に、定期的に呼び出すメソッド
         """

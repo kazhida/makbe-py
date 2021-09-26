@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .action import Action, Trans, NoOp
+from .action import Action, TransAction, NoOpAction
 from .key_event import KeyEvent, KeyPressed, KeyReleased
 
 
@@ -73,15 +73,15 @@ class KeySwitch:
         チャタリング防止の回数
     """
 
-    def __init__(self, action: Action,
-                 default: Action = Trans(),
+    def __init__(self, actions: [Action],
+                 default: Action = TransAction(),
                  debounce: int = 2):
         """
-        :param action: 対応するアクション（最下層に割り当てられる）
+        :param actions: 対応するアクション（最下層に割り当てられる）
         :param default: 未指定レイヤを使われたときのアクション
         :param debounce: チャタリング防止の回数
         """
-        self.actions = [action]
+        self.actions = actions
         self.default_action = default
         self.debouncer = Debouncer(debounce)
 
@@ -115,6 +115,16 @@ class KeySwitch:
         self.actions.append(action)
         return self
 
+    def append_actions(self, actions: [Action]):
+        """
+        :param actions: 追加するアクション
+        :return: 自分自身を返す（メソッドチェイン用）
+        """
+        for a in actions:
+            self.actions.append(a)
+        return self
+
+
     def remove_layers(self, remove_all: bool = False):
         """レイヤに割り当てられたアクションの除去
         キーマップのカスタマイズに使用する
@@ -133,7 +143,7 @@ def nop_switch() -> KeySwitch:
     """
     :return: 何もしないキースイッチ（デフォルト値用）
     """
-    return KeySwitch(NoOp(), NoOp())
+    return KeySwitch(NoOpAction(), NoOpAction())
 
 
-EMPTY_SWITCH = KeySwitch(NoOp(), NoOp())
+EMPTY_SWITCH = KeySwitch(NoOpAction(), NoOpAction())
