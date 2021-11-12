@@ -19,19 +19,31 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import action
+from . import KeySwitch
 from .key_event import KeyEvent, KeyReleased, KeyPressed
 from .processor import Processor
+from .actions import *
+
+
+class WaitingState:
+
+    def __init__(self, action: Action, switch: KeySwitch, pressed_at: int):
+        self.action = action,
+        self.pressed_at = pressed_at
+        self.switch = switch
+
+    def held(self, now: int) -> bool:
+        action = self.action
+        if isinstance(action, HoldTapAction):
+            return self.pressed_at + action.timeout > now
+        return False
 
 
 class LayeredProcessor(Processor):
-    """ WIP:レイヤとHoldTapに対応したプロセッサ
-    タップダンスやマクロなどには対応していない
-    """
+
     def __init__(self, kbd):
         self.layer = 0
-        self.default_layer = 0
-        self.waitingActions: [action.WaitingAction] = []
+        self.waitingStates: [WaitingState] = []
         self.kbd = kbd
 
     def put(self, event: KeyEvent, now: int):
@@ -39,62 +51,76 @@ class LayeredProcessor(Processor):
         :param event: 処理するイベント
         :param now: 現在時刻に相当する数値（ns単位）
         """
+        # レイヤを決める
+        for state in self.waitingStates:
+            action = state.action
+            self.set_layer(action, state.held(now))
         # 押されたとき
         if isinstance(event, KeyPressed):
-            self.on_pressed(event)
+            print("on_pressed")
+            switch = event.switch
+            action = switch.actions[self.layer]
+            if isinstance(action, TransAction):
+                action = self.find_action(switch, self.layer)
+            if isinstance(action, SingleKeyCode):
+                self.kbd.press(action.key_code)
+            if isinstance(action, MultipleKeyCodes):
+                for code in action.key_codes:
+                    self.kbd.press(code)
+            self.waitingStates.append(WaitingState(action, switch, now))
         # 放されたとき
         if isinstance(event, KeyReleased):
-            self.on_released(event, now)
+            print("on_released")
+            switch = event.switch
+            for state in self.waitingStates:
+                action = state.action
+                if state.switch is switch:
+                    self.do_release(action, state, now)
+                    self.waitingStates.remove(state)
+        # 後処理
+        for state in self.waitingStates:
+            action = state.action
+            if isinstance(action, HoldTapAction):
+                if state.pressed_at > 0 and not state.held(now):
+                    tap = action.tap
+                    if isinstance(tap, SingleKeyCode):
+                        self.kbd.press(tap.key_code)
+                        self.kbd.release(tap.key_code)
+                    if isinstance(tap, MultipleKeyCodes):
+                        for code in tap.key_codes:
+                            self.kbd.press(code.key_code)
+                            self.kbd.release(code.key_code)
+                    self.kbd.press(action.hold)
+                    state.pressed_at = 0
 
-    def on_pressed(self, event: KeyPressed):
-        # アクションの取り出し
-        a = event.switch.action(self.layer)
-        if isinstance(a, action.TransAction):
-            a = event.switch.action(self.default_layer)
-        # 単一キーコード: 普通にpress
-        if isinstance(a, action.SingleKeyCode):
-            self.kbd.press(a.key_codes())
-        # 複数キーコード: key_codesをsend
-        if isinstance(a, action.MultipleKeyCodes):
-            self.kbd.send(a.key_codes())
-        # レイヤ、デフォルトレイヤの切り替え
-        if isinstance(a, action.LayerAction):
-            self.layer = a.layer_no()
-        if isinstance(a, action.DefaultLayer):
-            self.default_layer = a.layer_no()
-        # HoldTapは、保持しておく
-        if isinstance(a, action.HoldTapAction):
-            self.waitingActions.append(action.WaitingAction(a, event.switch))
+    def do_release(self, action: Action, state: WaitingState, now: int):
+        if isinstance(action, SingleKeyCode):
+            self.kbd.release(action.key_code)
+        if isinstance(action, MultipleKeyCodes):
+            for code in reversed(action.key_codes):
+                self.kbd.release(code)
+        if isinstance(action, HoldTapAction):
+            if state.held(now):
+                self.do_release(action.hold, state, now)
+            else:
+                self.do_release(action.tap, state, now)
 
-    def on_released(self, event: KeyReleased, now: int):
-        # アクションの取り出し
-        a = event.switch.action(self.layer)
-        if isinstance(a, action.TransAction):
-            a = event.switch.action(self.default_layer)
-        # 単一キーコード: 普通にrelease
-        if isinstance(a, action.SingleKeyCode):
-            self.kbd.release(a.key_codes())
-        # レイヤーを戻す
-        if isinstance(a, action.LayerAction):
-            if self.layer == a.layer_no():
-                self.layer = self.default_layer
-        # HoldTap: 経過時間による
-        if isinstance(a, action.HoldTapAction):
-            for w in self.waitingActions:
-                if w.switch == event.switch:
-                    # 保持しておいたのを破棄
-                    self.waitingActions.remove(w)
-                    # 経過時間によってそれぞれ処理
-                    if now > w.since + w.timeout:
-                        self.on_released(w.hold, now)
-                    else:
-                        # Tap（押して放す）
-                        self.on_pressed(w.tap)
-                        self.on_released(w.tap, now)
+    def find_action(self, switch: KeySwitch, layer: int) -> Action:
+        if layer > 0:
+            layer -= 1
+            action = switch.action(layer)
+            if isinstance(action, TransAction):
+                return self.find_action(switch, layer)
+            else:
+                return action
+        else:
+            return NoOpAction()
 
-    def tick(self, now):
-        for w in self.waitingActions:
-            # 時間経過していたら、holdをpress
-            if now > w.since + w.timeout:
-                self.on_pressed(w.hold)
-                w.timeout = 0
+    def set_layer(self, action: Action, held: bool):
+        if isinstance(action, LayerAction):
+            self.layer = action.layer
+        if isinstance(action, HoldTapAction):
+            if held:
+                self.set_layer(action.hold, held)
+            else:
+                self.set_layer(action.tap, held)
