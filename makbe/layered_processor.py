@@ -80,6 +80,7 @@ class LayeredProcessor(Processor):
         # 後処理
         for state in self.waitingStates:
             action = state.action
+            print(dir(state))
             if isinstance(action, HoldTapAction):
                 if state.pressed_at > 0 and not state.held(now):
                     tap = action.tap

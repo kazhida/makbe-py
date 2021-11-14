@@ -47,7 +47,7 @@ class I2CScanner(Scanner):
         """
         I/Oエクスパンダをスキャンして、プロセッサに渡す
         """
-        now = monotonic_ns()
+        now = monotonic_ns() * 1000 * 1000
         for d in self.expanders:
             for i, p in enumerate(d.read_device(self.i2c)):
                 switch = d.switch(i)

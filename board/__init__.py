@@ -23,5 +23,5 @@
 """
   dummies
 """
-SDA = 0
-SCL = 0
+GP4 = 0
+GP5 = 0

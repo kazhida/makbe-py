@@ -21,13 +21,13 @@
 # SOFTWARE.
 
 import usb_hid
-from board import SDA, SCL
+from board import GP4, GP5
 from busio import I2C
 from adafruit_hid.keyboard import Keyboard
 
 from makbe.i2c_scanner import I2CScanner
 from makbe.key_switch import KeySwitch
-from makbe import k, KeyCode, TCA9555
+from makbe import kc, KeyCode, TCA9555
 from makbe.layered_processor import LayeredProcessor
 
 
@@ -37,57 +37,57 @@ class Switches:
     """
 
     def __init__(self):
-        self.esc = KeySwitch([k(KeyCode.ESCAPE)])
-        self.kb_q = KeySwitch([k(KeyCode.KB_Q)])
-        self.kb_w = KeySwitch([k(KeyCode.KB_W)])
-        self.kb_e = KeySwitch([k(KeyCode.KB_E)])
-        self.kb_r = KeySwitch([k(KeyCode.KB_R)])
-        self.kb_t = KeySwitch([k(KeyCode.KB_T)])
-        self.kb_y = KeySwitch([k(KeyCode.KB_Y)])
-        self.kb_u = KeySwitch([k(KeyCode.KB_U)])
-        self.kb_i = KeySwitch([k(KeyCode.KB_I)])
-        self.kb_o = KeySwitch([k(KeyCode.KB_O)])
-        self.kb_p = KeySwitch([k(KeyCode.KB_P)])
-        self.minus = KeySwitch([k(KeyCode.MINUS)])
-        self.back_space = KeySwitch([k(KeyCode.BACK_SPACE)])
+        self.esc = KeySwitch([kc(KeyCode.ESCAPE)])
+        self.kb_q = KeySwitch([kc(KeyCode.KB_Q)])
+        self.kb_w = KeySwitch([kc(KeyCode.KB_W)])
+        self.kb_e = KeySwitch([kc(KeyCode.KB_E)])
+        self.kb_r = KeySwitch([kc(KeyCode.KB_R)])
+        self.kb_t = KeySwitch([kc(KeyCode.KB_T)])
+        self.kb_y = KeySwitch([kc(KeyCode.KB_Y)])
+        self.kb_u = KeySwitch([kc(KeyCode.KB_U)])
+        self.kb_i = KeySwitch([kc(KeyCode.KB_I)])
+        self.kb_o = KeySwitch([kc(KeyCode.KB_O)])
+        self.kb_p = KeySwitch([kc(KeyCode.KB_P)])
+        self.minus = KeySwitch([kc(KeyCode.MINUS)])
+        self.back_space = KeySwitch([kc(KeyCode.BACK_SPACE)])
 
-        self.tab = KeySwitch([k(KeyCode.TAB)])
-        self.kb_a = KeySwitch([k(KeyCode.KB_A)])
-        self.kb_s = KeySwitch([k(KeyCode.KB_S)])
-        self.kb_d = KeySwitch([k(KeyCode.KB_D)])
-        self.kb_f = KeySwitch([k(KeyCode.KB_F)])
-        self.kb_g = KeySwitch([k(KeyCode.KB_G)])
-        self.kb_h = KeySwitch([k(KeyCode.KB_H)])
-        self.kb_j = KeySwitch([k(KeyCode.KB_J)])
-        self.kb_k = KeySwitch([k(KeyCode.KB_K)])
-        self.kb_l = KeySwitch([k(KeyCode.KB_L)])
-        self.semi_colon = KeySwitch([k(KeyCode.SEMI_COLON)])
-        self.enter = KeySwitch([k(KeyCode.ENTER)])
+        self.tab = KeySwitch([kc(KeyCode.TAB)])
+        self.kb_a = KeySwitch([kc(KeyCode.KB_A)])
+        self.kb_s = KeySwitch([kc(KeyCode.KB_S)])
+        self.kb_d = KeySwitch([kc(KeyCode.KB_D)])
+        self.kb_f = KeySwitch([kc(KeyCode.KB_F)])
+        self.kb_g = KeySwitch([kc(KeyCode.KB_G)])
+        self.kb_h = KeySwitch([kc(KeyCode.KB_H)])
+        self.kb_j = KeySwitch([kc(KeyCode.KB_J)])
+        self.kb_k = KeySwitch([kc(KeyCode.KB_K)])
+        self.kb_l = KeySwitch([kc(KeyCode.KB_L)])
+        self.semi_colon = KeySwitch([kc(KeyCode.SEMI_COLON)])
+        self.enter = KeySwitch([kc(KeyCode.ENTER)])
 
-        self.l_shift = KeySwitch([k(KeyCode.L_SHIFT)])
-        self.kb_z = KeySwitch([k(KeyCode.KB_Z)])
-        self.kb_x = KeySwitch([k(KeyCode.KB_X)])
-        self.kb_c = KeySwitch([k(KeyCode.KB_C)])
-        self.kb_v = KeySwitch([k(KeyCode.KB_V)])
-        self.kb_b = KeySwitch([k(KeyCode.KB_B)])
-        self.kb_n = KeySwitch([k(KeyCode.KB_N)])
-        self.kb_m = KeySwitch([k(KeyCode.KB_M)])
-        self.comma = KeySwitch([k(KeyCode.COMMA)])
-        self.dot = KeySwitch([k(KeyCode.DOT)])
-        self.up = KeySwitch([k(KeyCode.UP)])
-        self.slash = KeySwitch([k(KeyCode.SLASH)])
+        self.l_shift = KeySwitch([kc(KeyCode.L_SHIFT)])
+        self.kb_z = KeySwitch([kc(KeyCode.KB_Z)])
+        self.kb_x = KeySwitch([kc(KeyCode.KB_X)])
+        self.kb_c = KeySwitch([kc(KeyCode.KB_C)])
+        self.kb_v = KeySwitch([kc(KeyCode.KB_V)])
+        self.kb_b = KeySwitch([kc(KeyCode.KB_B)])
+        self.kb_n = KeySwitch([kc(KeyCode.KB_N)])
+        self.kb_m = KeySwitch([kc(KeyCode.KB_M)])
+        self.comma = KeySwitch([kc(KeyCode.COMMA)])
+        self.dot = KeySwitch([kc(KeyCode.DOT)])
+        self.up = KeySwitch([kc(KeyCode.UP)])
+        self.slash = KeySwitch([kc(KeyCode.SLASH)])
 
-        self.l_ctrl = KeySwitch([k(KeyCode.L_CTRL)])
-        self.l_gui = KeySwitch([k(KeyCode.L_GUI)])
-        self.delete = KeySwitch([k(KeyCode.DELETE)])
-        self.l_alt = KeySwitch([k(KeyCode.L_ALT)])
-        self.l_space = KeySwitch([k(KeyCode.SPACE)])
-        self.r_space = KeySwitch([k(KeyCode.SPACE)])
-        self.r_gui = KeySwitch([k(KeyCode.R_GUI)])
-        self.r_alt = KeySwitch([k(KeyCode.R_ALT)])
-        self.left = KeySwitch([k(KeyCode.LEFT)])
-        self.down = KeySwitch([k(KeyCode.DOWN)])
-        self.right = KeySwitch([k(KeyCode.RIGHT)])
+        self.l_ctrl = KeySwitch([kc(KeyCode.L_CTRL)])
+        self.l_gui = KeySwitch([kc(KeyCode.L_GUI)])
+        self.delete = KeySwitch([kc(KeyCode.DELETE)])
+        self.l_alt = KeySwitch([kc(KeyCode.L_ALT)])
+        self.l_space = KeySwitch([kc(KeyCode.SPACE)])
+        self.r_space = KeySwitch([kc(KeyCode.SPACE)])
+        self.r_gui = KeySwitch([kc(KeyCode.R_GUI)])
+        self.r_alt = KeySwitch([kc(KeyCode.R_ALT)])
+        self.left = KeySwitch([kc(KeyCode.LEFT)])
+        self.down = KeySwitch([kc(KeyCode.DOWN)])
+        self.right = KeySwitch([kc(KeyCode.RIGHT)])
 
 
 class Column13ansi:
@@ -170,7 +170,7 @@ class Column13ansi:
         self.expanders.append(expander)
 
         # I2Cマスタの生成
-        i2c = I2C(SCL, SDA)
+        i2c = I2C(GP5, GP4)
         while not i2c.try_lock():
             pass
 
