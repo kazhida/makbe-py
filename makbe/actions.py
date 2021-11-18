@@ -98,13 +98,17 @@ def kc(key_code: int) -> Action:
     return SingleKeyCode(key_code)
 
 
-def mc(modifier: int, key_code: int) -> Action:
+def mc(modifier: int, key_code) -> Action:
     """
     モディファイア修飾したキー
     :param modifier: キーコード（モディファイア）
     :param key_code: キーコード
     :return: 割り当てられたキーコードのSingleKeyCodeアクションを返す
     """
+    if isinstance(key_code, SingleKeyCode):
+        return MultipleKeyCodes([modifier, key_code.key_code])
+    if isinstance(key_code, MultipleKeyCodes):
+        return MultipleKeyCodes([modifier] + key_code.key_codes)
     return MultipleKeyCodes([modifier, key_code])
 
 

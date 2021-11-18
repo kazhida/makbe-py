@@ -65,7 +65,7 @@ class KeySwitch:
 
     Attributes
     ----------
-    action:
+    actions:
         対応するアクション（最下層に割り当てられる）
     default:
         未指定レイヤを使われたときのアクション
@@ -123,7 +123,6 @@ class KeySwitch:
         for a in actions:
             self.actions.append(a)
         return self
-
 
     def remove_layers(self, remove_all: bool = False):
         """レイヤに割り当てられたアクションの除去

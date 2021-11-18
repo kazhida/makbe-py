@@ -120,6 +120,7 @@ class LayeredProcessor(Processor):
             return NoOpAction()
 
     def set_layer(self, action: Action, held: bool):
+        self.layer = 0
         if isinstance(action, LayerAction):
             self.layer = action.layer
         if isinstance(action, HoldTapAction):

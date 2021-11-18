@@ -28,6 +28,8 @@ from makbe.i2c_scanner import I2CScanner
 from makbe.key_switch import KeySwitch
 from makbe import kc, TCA9555, mc, mt, KeyCode, lt, trans
 from makbe.layered_processor import LayeredProcessor
+from makbe.wrapped_kbd import WrappedKeyboard
+
 
 class KC(KeyCode):      # KeyCodeが頻出するので短縮形を作っておく
     pass
@@ -425,7 +427,7 @@ class Column13ansi:
             pass
 
         # プロセッサ（とりあえずModelessProcessor）の生成
-        kbd = Keyboard(usb_hid.devices)
+        kbd = WrappedKeyboard(Keyboard(usb_hid.devices))
         proc = LayeredProcessor(kbd)
 
         # スキャナの生成
