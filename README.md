@@ -6,6 +6,8 @@ CircuitPythonでキーボードファームウェアを実装するためのラ�
 
 ## 使い方
 
+* MCUにそれぞれに対応したCircuitPythonをインストールします。
+* CircuitPythonのライブラリバンドルから、adafruit_hidをCircuitPythonのlibフォルダ直下にコピーします。
 * このリポジトリのmakbeフォルダをCircuitPythonのlibフォルダ直下にコピーします。
 * keyboard定義コード（ex. keyboard_column13ansi.py）をCircuitPythonのルートにコピーします。
 * code.pyを必要に応じて修正した後、CircuitPythonのルートにコピーします。
