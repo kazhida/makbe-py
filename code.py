@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from column13ansi import Column13ansi
+from keyboard_column13ansi import Column13ansi
 
 
 print("start!")

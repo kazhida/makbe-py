@@ -351,6 +351,7 @@ class Column13ansi:
         キースイッチクラスタを生成し、I2CScannerを使うのでI/Oエクスパンダにそれを割り当ててて、
         とりあえず、ModelessProcessorで処理するようにしている
         """
+
         # スイッチとI/Oエクスパンダのリストを生成
         self.sw = Switches()
         self.expanders = []
@@ -381,11 +382,13 @@ class Column13ansi:
         expander.assign(3, self.sw.kb_c)
         expander.assign(4, self.sw.kb_v)
         expander.assign(5, self.sw.kb_b)
+
         expander.assign(8, self.sw.l_ctrl)
         expander.assign(9, self.sw.l_gui)
         expander.assign(10, self.sw.delete)
         expander.assign(11, self.sw.l_alt)
         expander.assign(12, self.sw.l_space)
+
         self.expanders.append(expander)
 
         # キーの割り当て、3つ目
@@ -397,12 +400,14 @@ class Column13ansi:
         expander.assign(4, self.sw.kb_p)
         expander.assign(5, self.sw.minus)
         expander.assign(6, self.sw.back_space)
+
         expander.assign(8, self.sw.kb_h)
         expander.assign(9, self.sw.kb_j)
         expander.assign(10, self.sw.kb_k)
         expander.assign(11, self.sw.kb_l)
         expander.assign(12, self.sw.semi_colon)
         expander.assign(13, self.sw.enter)
+
         self.expanders.append(expander)
 
         # キーの割り当て、4つ目
@@ -413,12 +418,14 @@ class Column13ansi:
         expander.assign(3, self.sw.dot)
         expander.assign(4, self.sw.up)
         expander.assign(5, self.sw.slash)
+
         expander.assign(8, self.sw.r_space)
         expander.assign(9, self.sw.r_gui)
         expander.assign(10, self.sw.r_alt)
         expander.assign(11, self.sw.left)
         expander.assign(12, self.sw.down)
         expander.assign(13, self.sw.right)
+
         self.expanders.append(expander)
 
         # I2Cマスタの生成
@@ -426,8 +433,9 @@ class Column13ansi:
         while not i2c.try_lock():
             pass
 
-        # プロセッサ（とりあえずModelessProcessor）の生成
-        kbd = WrappedKeyboard(Keyboard(usb_hid.devices))
+        # プロセッサの生成
+        # kbd = WrappedKeyboard(Keyboard(usb_hid.devices))
+        kbd = Keyboard(usb_hid.devices)
         proc = LayeredProcessor(kbd)
 
         # スキャナの生成
