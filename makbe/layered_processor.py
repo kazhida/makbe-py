@@ -28,14 +28,14 @@ from .actions import *
 class WaitingState:
 
     def __init__(self, action: Action, switch: KeySwitch, pressed_at: int):
-        self.action = action,
+        self.action = action
         self.pressed_at = pressed_at
         self.switch = switch
 
     def held(self, now: int) -> bool:
         action = self.action
         if isinstance(action, HoldTapAction):
-            return self.pressed_at + action.timeout > now
+            return self.pressed_at > 0 and now > self.pressed_at + action.timeout
         return False
 
 
@@ -55,6 +55,7 @@ class LayeredProcessor(Processor):
         for state in self.waitingStates:
             action = state.action
             self.set_layer(action, state.held(now))
+        print("layer: %d" % self.layer)
         # 押されたとき
         if isinstance(event, KeyPressed):
             print("on_pressed")
@@ -67,7 +68,8 @@ class LayeredProcessor(Processor):
             if isinstance(action, MultipleKeyCodes):
                 for code in action.key_codes:
                     self.kbd.press(code)
-            self.waitingStates.append(WaitingState(action, switch, now))
+            state = WaitingState(action, switch, now)
+            self.waitingStates.append(state)
         # 放されたとき
         if isinstance(event, KeyReleased):
             print("on_released")
@@ -77,22 +79,20 @@ class LayeredProcessor(Processor):
                 if state.switch is switch:
                     self.do_release(action, state, now)
                     self.waitingStates.remove(state)
-        # 後処理
+
+    def tick(self, now: int):
         for state in self.waitingStates:
             action = state.action
-            print(dir(state))
             if isinstance(action, HoldTapAction):
-                if state.pressed_at > 0 and not state.held(now):
-                    tap = action.tap
-                    if isinstance(tap, SingleKeyCode):
-                        self.kbd.press(tap.key_code)
-                        self.kbd.release(tap.key_code)
-                    if isinstance(tap, MultipleKeyCodes):
-                        for code in tap.key_codes:
+                if state.held(now):
+                    hold = action.hold
+                    if isinstance(hold, SingleKeyCode):
+                        self.kbd.press(hold.key_code)
+                        state.pressed_at = 0
+                    if isinstance(hold, MultipleKeyCodes):
+                        for code in hold.key_codes:
                             self.kbd.press(code.key_code)
-                            self.kbd.release(code.key_code)
-                    self.kbd.press(action.hold)
-                    state.pressed_at = 0
+                        state.pressed_at = 0
 
     def do_release(self, action: Action, state: WaitingState, now: int):
         if isinstance(action, SingleKeyCode):
@@ -101,10 +101,12 @@ class LayeredProcessor(Processor):
             for code in reversed(action.key_codes):
                 self.kbd.release(code)
         if isinstance(action, HoldTapAction):
-            if state.held(now):
+            if state.pressed_at == 0 or state.held(now):
                 self.do_release(action.hold, state, now)
+                print("released hold")
             else:
                 self.do_release(action.tap, state, now)
+                print("released tap")
 
     def find_action(self, switch: KeySwitch, layer: int) -> Action:
         if layer > 0:

@@ -78,15 +78,3 @@ class KeyReleased(KeyEvent):
         :return: Trueを返す
         """
         return True
-
-
-class EventSince:
-    """キーイベントとそこからの経過時間（スキャン回数）の組み合わせ
-    """
-
-    def __init__(self, event: KeyEvent):
-        """
-        :param event: キーイベント
-        """
-        self.event = event
-        self.since = monotonic_ns()

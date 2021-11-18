@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from .key_event import KeyPressed, KeyReleased, KeyEvent
+from .key_event import KeyPressed, KeyReleased
 from .io_expander import IoExpander
 from .processor import Processor
 from .scanner import Scanner
@@ -47,7 +47,7 @@ class I2CScanner(Scanner):
         """
         I/Oエクスパンダをスキャンして、プロセッサに渡す
         """
-        now = monotonic_ns() * 1000 * 1000
+        now = monotonic_ns() // 1000 // 1000
         for d in self.expanders:
             for i, p in enumerate(d.read_device(self.i2c)):
                 switch = d.switch(i)

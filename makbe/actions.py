@@ -87,7 +87,7 @@ class HoldTapAction(Action):
         """
         self.hold = hold
         self.tap = tap
-        self.timeout = timeout * 1000 * 1000
+        self.timeout = timeout
 
 
 def kc(key_code: int) -> Action:
@@ -100,6 +100,7 @@ def kc(key_code: int) -> Action:
 
 def mc(modifier: int, key_code: int) -> Action:
     """
+    モディファイア修飾したキー
     :param modifier: キーコード（モディファイア）
     :param key_code: キーコード
     :return: 割り当てられたキーコードのSingleKeyCodeアクションを返す
@@ -117,6 +118,7 @@ def la(layer: int) -> Action:
 
 def lt(layer: int, key_code: int) -> Action:
     """
+    長押しでレイヤ指定、短押しでキーコード
     :param layer: レイヤ番号
     :param key_code: キーコード
     :return: holdでレイヤ切り替え、tapでキーコードのHoldTapアクションを返す
@@ -126,6 +128,7 @@ def lt(layer: int, key_code: int) -> Action:
 
 def mt(modifier: int, key_code: int) -> Action:
     """
+    長押しでモディファイア、短押しでキーコード
     :param modifier: モディファイアキーのキーコード
     :param key_code: キーコード
     :return: holdでモディファイア、tapでキーコードのHoldTapアクションを返す
