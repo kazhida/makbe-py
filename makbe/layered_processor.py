@@ -94,6 +94,13 @@ class LayeredProcessor(Processor):
                             self.kbd.press(code.key_code)
                         state.pressed_at = 0
 
+    def do_press(self, action: Action):
+        if isinstance(action, SingleKeyCode):
+            self.kbd.press(action.key_code)
+        if isinstance(action, MultipleKeyCodes):
+            for code in action.key_codes:
+                self.kbd.press(code)
+
     def do_release(self, action: Action, state: WaitingState, now: int):
         if isinstance(action, SingleKeyCode):
             self.kbd.release(action.key_code)
@@ -105,6 +112,7 @@ class LayeredProcessor(Processor):
                 self.do_release(action.hold, state, now)
                 print("released hold")
             else:
+                self.do_press(action.tap)
                 self.do_release(action.tap, state, now)
                 print("released tap")
 

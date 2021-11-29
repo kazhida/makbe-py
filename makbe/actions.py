@@ -120,14 +120,17 @@ def la(layer: int) -> Action:
     return LayerAction(layer)
 
 
-def lt(layer: int, key_code: int) -> Action:
+def lt(layer: int, key_code) -> Action:
     """
     長押しでレイヤ指定、短押しでキーコード
     :param layer: レイヤ番号
     :param key_code: キーコード
     :return: holdでレイヤ切り替え、tapでキーコードのHoldTapアクションを返す
     """
-    return HoldTapAction(la(layer), SingleKeyCode(key_code))
+    if isinstance(key_code, Action):
+        return HoldTapAction(la(layer), key_code)
+    else:
+        return HoldTapAction(la(layer), SingleKeyCode(key_code))
 
 
 def mt(modifier: int, key_code: int) -> Action:
