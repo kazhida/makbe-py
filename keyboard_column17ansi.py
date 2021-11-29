@@ -434,7 +434,7 @@ class Switches:
         ])
 
         self.l_space2 = KeySwitch([
-            lt(Layer.LOWER, mc(KC.L_CTRL, mc(KC.L_SHIFT, KC.KB_C))),
+            lt(Layer.LOWER, KC.LANG_2),
             trans(),
             trans(),
             trans()
@@ -446,7 +446,7 @@ class Switches:
             trans()
         ])
         self.r_space2 = KeySwitch([
-            lt(Layer.RAISE, mc(KC.L_CTRL, mc(KC.L_SHIFT, KC.KB_Z))),
+            lt(Layer.RAISE, KC.LANG_1),
             trans(),
             trans(),
             trans()

@@ -79,7 +79,7 @@ class HoldTapAction(Action):
     """ 特定時間押しっぱなしにした場合（hold）とそれ以前に話したとき(tap)、それぞれにアクションを割り当てるアクション
     """
 
-    def __init__(self, hold: Action, tap: Action, timeout: int = 200):
+    def __init__(self, hold: Action, tap: Action, timeout: int = 400):
         """
         :param hold: 押しっぱなしの場合のアクション
         :param tap: すぐに話したときのアクション
