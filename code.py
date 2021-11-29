@@ -21,13 +21,17 @@
 # SOFTWARE.
 
 from keyboard_column13ansi import Column13ansi
+from keyboard_column7ansi import Column7ansi
+from time import sleep
 
-
+sleep(0.5)
 print("start!")
 
 # キーボードを生成する
-keyboard = Column13ansi()
+# keyboard = Column13ansi()
+keyboard = Column7ansi()
 print("started")
+
 
 # キーマップのカスタマイズはここでやる
 # ex)
