@@ -29,9 +29,9 @@ sleep(0.5)
 print("start!")
 
 # キーボードを生成する
-# keyboard = Column7ansi()
+keyboard = Column7ansi()
 # keyboard = Column13ansi()
-keyboard = Column17ansi()
+# keyboard = Column17ansi()
 print("started")
 
 
