@@ -20,16 +20,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from keyboard_column13ansi import Column13ansi
 from keyboard_column7ansi import Column7ansi
+from keyboard_column13ansi import Column13ansi
+from keyboard_column17ansi import Column17ansi
 from time import sleep
 
 sleep(0.5)
 print("start!")
 
 # キーボードを生成する
+# keyboard = Column7ansi()
 # keyboard = Column13ansi()
-keyboard = Column7ansi()
+keyboard = Column17ansi()
 print("started")
 
 

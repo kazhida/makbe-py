@@ -355,7 +355,7 @@ class Switches:
 
 
 class Column7ansi:
-    """例としてColumn13のansi配列を実装している
+    """例としてColumn7のansi配列を実装している
     """
 
     def __init__(self):
