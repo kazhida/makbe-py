@@ -20,7 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import usb_hid
-from board import GP4, GP5
+#from board import GP4, GP5
+from board import SCL, SDA
 from busio import I2C
 from adafruit_hid.keyboard import Keyboard
 
@@ -429,7 +430,7 @@ class Column13ansi:
         self.expanders.append(expander)
 
         # I2Cマスタの生成
-        i2c = I2C(GP5, GP4)
+        i2c = I2C(SCL, SDA)
         while not i2c.try_lock():
             pass
 

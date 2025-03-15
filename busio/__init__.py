@@ -27,7 +27,7 @@
 
 class I2C:
 
-    def __init__(self, sda, scl):
+    def __init__(self, sda, scl, freq = 1000000):
         self.sda = sda
         self.scl = scl
 
