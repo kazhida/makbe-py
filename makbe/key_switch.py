@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from typing import List
 
 from .actions import Action, TransAction, NoOpAction
 from .key_event import KeyEvent, KeyPressed, KeyReleased
@@ -67,22 +68,22 @@ class KeySwitch:
     ----------
     actions:
         対応するアクション（最下層に割り当てられる）
-    default:
+    default_action:
         未指定レイヤを使われたときのアクション
     debounce:
         チャタリング防止の回数
     """
 
-    def __init__(self, actions: [Action],
-                 default: Action = TransAction(),
+    def __init__(self, actions: List[Action],
+                 default_action: Action = TransAction(),
                  debounce: int = 2):
         """
         :param actions: 対応するアクション（最下層に割り当てられる）
-        :param default: 未指定レイヤを使われたときのアクション
+        :param default_action: 未指定レイヤを使われたときのアクション
         :param debounce: チャタリング防止の回数
         """
         self.actions = actions
-        self.default_action = default
+        self.default_action = default_action
         self.debouncer = Debouncer(debounce)
 
     def update(self, pressed: bool) -> KeyEvent:
@@ -115,7 +116,7 @@ class KeySwitch:
         self.actions.append(action)
         return self
 
-    def append_actions(self, actions: [Action]):
+    def append_actions(self, actions: List[Action]):
         """
         :param actions: 追加するアクション
         :return: 自分自身を返す（メソッドチェイン用）
@@ -142,7 +143,7 @@ def nop_switch() -> KeySwitch:
     """
     :return: 何もしないキースイッチ（デフォルト値用）
     """
-    return KeySwitch(NoOpAction(), NoOpAction())
+    return KeySwitch([NoOpAction()], NoOpAction())
 
 
-EMPTY_SWITCH = KeySwitch(NoOpAction(), NoOpAction())
+EMPTY_SWITCH = KeySwitch([NoOpAction()], NoOpAction())
