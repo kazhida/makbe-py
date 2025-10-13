@@ -19,12 +19,17 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from .key_event import KeyPressed, KeyReleased, KeyEvent
-from .io_expander import IoExpander
-from .processor import Processor
-from .scanner import Scanner
+from makbe.key_event import KeyPressed, KeyReleased, KeyEvent
+from makbe.io_expander import IoExpander
+from makbe.processor import Processor
+from makbe.scanner import Scanner
 from time import monotonic_ns
 from collections import deque
+try:
+    from typing import Optional, List, Any, Tuple, Union, Deque
+except ImportError:
+    # CircuitPythonランタイムでは型ヒントをスキップ
+    pass
 
 
 class I2CScanner(Scanner):
@@ -33,7 +38,7 @@ class I2CScanner(Scanner):
     非同期動作をサポートするイベントキューベースの実装
     """
 
-    def __init__(self, expanders: List[IoExpander], i2c: Any, processor: Processor, *, 
+    def __init__(self, expanders: List[IoExpander], i2c: Any, processor: Processor,
                  time_provider=monotonic_ns, debug: bool = False, scan_interval_ms: int = 5,
                  event_queue_size: int = 32):
         """
@@ -56,7 +61,7 @@ class I2CScanner(Scanner):
         self.process_interval_ms = 1  # プロセッサ更新間隔（ms）
         
         # イベントキュー: (イベント, 時間) のタプルを格納
-        self.event_queue: Deque[Tuple[KeyEvent, int]] = deque(maxlen=event_queue_size)
+        self.event_queue = deque([], event_queue_size)
         
         # 各デバイスの初期化（各デバイスは独立して処理、失敗したデバイスがあっても続行）
         for d in expanders:

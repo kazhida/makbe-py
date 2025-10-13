@@ -67,14 +67,14 @@ class KeySwitch:
     ----------
     actions:
         対応するアクション（最下層に割り当てられる）
-    default:
+    default_action:
         未指定レイヤを使われたときのアクション
     debounce:
         チャタリング防止の回数
     """
 
     def __init__(self, actions: list[Action],
-                 default: Action = TransAction(),
+                 default_action: Action = TransAction(),
                  debounce: int = 2):
         """
         :param actions: 対応するアクション（最下層に割り当てられる）
@@ -82,7 +82,7 @@ class KeySwitch:
         :param debounce: チャタリング防止の回数
         """
         self.actions = actions
-        self.default_action = default
+        self.default_action = default_action
         self.debouncer = Debouncer(debounce)
 
     def update(self, pressed: bool) -> KeyEvent:

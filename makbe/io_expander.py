@@ -19,8 +19,12 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from .key_switch import KeySwitch
-
+from makbe.key_switch import KeySwitch
+try:
+    from typing import Optional, List, Any, Tuple, Union
+except ImportError:
+    # CircuitPythonランタイムでは型ヒントをスキップ
+    pass
 
 class IoExpander:
     """I/Oエクスパンダのインターフェース
