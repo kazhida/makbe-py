@@ -73,7 +73,7 @@ class KeySwitch:
         チャタリング防止の回数
     """
 
-    def __init__(self, actions: [Action],
+    def __init__(self, actions: list[Action],
                  default: Action = TransAction(),
                  debounce: int = 2):
         """

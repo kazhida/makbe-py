@@ -22,6 +22,7 @@
 
 #from keyboard_column7ansi import Column7ansi
 from keyboard_column13ansi import Column13ansi
+from keyboard_column13ansi_w import Column13ansiW
 #from keyboard_column17ansi import Column17ansi
 from time import sleep
 
@@ -40,6 +41,13 @@ print("started")
 #   keyboard.sw.esc.append_action(k(KeyCode.GRAVE))
 
 # 無限ループでスキャンする
+# メインループ
 while True:
-    keyboard.scanner.scan()
+    # スキャナの更新（スキャンとイベント処理が非同期に行われる）
+    keyboard.scanner.update()
+    # 他の処理（例：LED更新、ディスプレイ更新など）
+    #   keyboard.update_leds()
+    #   keyboard.update_display()
+    # 必要に応じて短い遅延（全体の応答性を保つ）
+    sleep(0.001)  # 1msの遅延
 
