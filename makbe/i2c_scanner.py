@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from makbe.key_event import KeyPressed, KeyReleased
+from makbe.key_event import KeyPressed, KeyReleased, KeyEvent
 from makbe.io_expander import IoExpander
 from makbe.processor import Processor
 from makbe.scanner import Scanner
@@ -43,7 +43,7 @@ class I2CScanner(Scanner):
                  event_queue_size: int = 32):
         """
         :param expanders: I/Oエクスパンダのリスト
-        :param i2c: I2Cマスタ
+        :param i2c: I2Cマスタ（busio.I2C等）
         :param processor: キーイベントを処理するオブジェクト
         :param time_provider: 時間を返す関数（ns単位）。テスト容易性のために注入可能
         :param debug: デバッグログ出力の有効化
@@ -59,10 +59,10 @@ class I2CScanner(Scanner):
         self.last_scan_time_ns = 0
         self.last_process_time_ns = 0
         self.process_interval_ms = 1  # プロセッサ更新間隔（ms）
-        
+
         # イベントキュー: (イベント, 時間) のタプルを格納
         self.event_queue = deque([], event_queue_size)
-        
+
         # 各デバイスの初期化（各デバイスは独立して処理、失敗したデバイスがあっても続行）
         for d in expanders:
             try:
@@ -79,46 +79,46 @@ class I2CScanner(Scanner):
         update()を呼び出すだけ
         """
         self.update()
-        
+
     def update(self) -> bool:
         """
         状態を更新し、スキャンとイベント処理を非同期に行う
         メインループで頻繁に呼び出す必要がある
-        
+
         :return: 何らかの処理（スキャンまたはイベント処理）が行われた場合はTrue
         """
         now_ns = self.time_provider()
         did_something = False
-        
+
         # スキャン処理（キー読み取り）
         if self._should_scan(now_ns):
             self._do_scan(now_ns)
             did_something = True
-            
+
         # イベント処理（キューからプロセッサへ）
         if self._should_process(now_ns):
             self._process_events(now_ns)
             did_something = True
-            
+
         return did_something
-        
+
     def _should_scan(self, now_ns: int) -> bool:
         """スキャンすべきタイミングかどうか判定"""
         elapsed_ms = (now_ns - self.last_scan_time_ns) // 1000000
         return elapsed_ms >= self.scan_interval_ms
-        
+
     def _should_process(self, now_ns: int) -> bool:
         """イベント処理すべきタイミングかどうか判定"""
         if not self.event_queue:  # キューが空なら処理不要
             return False
-            
+
         elapsed_ms = (now_ns - self.last_process_time_ns) // 1000000
         return elapsed_ms >= self.process_interval_ms
-        
+
     def _do_scan(self, now_ns: int):
         """I/Oエクスパンダをスキャンして、イベントをキューに追加する"""
         self.last_scan_time_ns = now_ns
-        
+
         try:
             # 各エクスパンダを独立してスキャン
             for d in self.expanders:
@@ -129,16 +129,16 @@ class I2CScanner(Scanner):
                     if self.debug:
                         print(f"I2CScanner: デバイス読取失敗: {d} - {e}")
                     continue
-                
+
                 if readings is None:
                     continue
-                    
+
                 # 各ピンの状態を処理
                 for i, pin_state in enumerate(readings):
                     try:
                         switch = d.switch(i)
                         event = switch.update(pin_state)
-                        
+
                         # 有効なイベントのみキューに追加
                         if isinstance(event, KeyPressed) or isinstance(event, KeyReleased):
                             self.event_queue.append((event, now_ns))
@@ -148,20 +148,20 @@ class I2CScanner(Scanner):
                         if self.debug:
                             print(f"I2CScanner: キースイッチ処理エラー: ピン {i}, デバイス {d} - {e}")
                         continue
-                        
+
         except Exception as e:
             if self.debug:
                 print(f"I2CScanner: スキャン全体エラー: {e}")
-                
+
     def _process_events(self, now_ns: int):
         """キューからイベントを取り出してプロセッサに渡す"""
         self.last_process_time_ns = now_ns
-        
+
         try:
             # キューが空になるまで、または最大処理数に達するまで処理
             max_events_per_cycle = 5  # 一度に処理するイベントの最大数
             events_processed = 0
-            
+
             while self.event_queue and events_processed < max_events_per_cycle:
                 event, timestamp = self.event_queue.popleft()
                 try:
@@ -170,11 +170,11 @@ class I2CScanner(Scanner):
                 except Exception as e:
                     if self.debug:
                         print(f"I2CScanner: プロセッサイベント処理エラー: {e}")
-            
+
             # 全イベントの処理後、tickを呼び出す
             if events_processed > 0:
                 self.processor.tick(now_ns)
-                
+
         except Exception as e:
             if self.debug:
                 print(f"I2CScanner: イベント処理全体エラー: {e}")
