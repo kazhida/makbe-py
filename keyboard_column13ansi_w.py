@@ -48,7 +48,7 @@ class Switches:
 
     def __init__(self):
         self.esc = KeySwitch([
-            lt(Layer.FUNCS, KC.ESCAPE),
+            kc(KC.ESCAPE),
             kc(KC.GRAVE),
             mc(KC.L_SHIFT, KC.GRAVE),
             trans()
@@ -250,6 +250,7 @@ class Switches:
         ])
         self.comma = KeySwitch([
             kc(KC.COMMA),
+            kc(KC.L_BRACKET),
             mc(KC.R_SHIFT, KC.L_BRACKET),
             trans()
         ])
@@ -261,8 +262,8 @@ class Switches:
         ])
         self.up = KeySwitch([
             kc(KC.UP),
-            kc(KC.PAGE_UP),
             mc(KC.L_GUI, KC.UP),
+            kc(KC.PAGE_UP),
             trans()
         ])
         self.slash = KeySwitch([
@@ -290,26 +291,26 @@ class Switches:
             trans(),
             trans()
         ])
-        self.l_space = KeySwitch([
-            kc(KC.SPACE),
-            trans(),
-            trans(),
-            trans()
-        ])
         self.l_alt = KeySwitch([
-            lt(Layer.LOWER, KC.LANG_2),
+            mt(KC.L_ALT, KC.LANG_2),
             trans(),
             trans(),
             trans()
         ])
-        self.r_gui = KeySwitch([
-            mt(KC.R_SHIFT, KC.LANG_1),
+        self.l_space = KeySwitch([
+            lt(Layer.LOWER, KC.SPACE),
             trans(),
             trans(),
             trans()
         ])
         self.r_space = KeySwitch([
-            lt(Layer.RAISE, KC.SPACE),
+            mt(KC.R_SHIFT, KC.SPACE),
+            trans(),
+            trans(),
+            trans()
+        ])
+        self.r_gui = KeySwitch([
+            lt(Layer.RAISE, KC.LANG_1),
             trans(),
             trans(),
             trans()
@@ -322,20 +323,20 @@ class Switches:
         ])
         self.left = KeySwitch([
             kc(KC.LEFT),
-            kc(KC.HOME),
             mc(KC.L_GUI, KC.LEFT),
+            kc(KC.HOME),
             trans()
         ])
         self.down = KeySwitch([
             kc(KC.DOWN),
-            kc(KC.PAGE_DOWN),
             mc(KC.L_GUI, KC.DOWN),
+            kc(KC.PAGE_DOWN),
             trans()
         ])
         self.right = KeySwitch([
             kc(KC.RIGHT),
-            kc(KC.END),
             mc(KC.L_GUI, KC.RIGHT),
+            kc(KC.END),
             trans()
         ])
         self.exp1 = KeySwitch([
@@ -386,7 +387,7 @@ class Column13ansiW:
         self.expanders.append(expander)
 
         # キーの割り当て、2つ目
-        expander = TCA9555(0x02)
+        expander = TCA9555(0x01)
         expander.assign(0, self.sw.l_shift)
         expander.assign(1, self.sw.kb_z)
         expander.assign(2, self.sw.kb_x)
@@ -397,13 +398,13 @@ class Column13ansiW:
         expander.assign(8, self.sw.l_ctrl)
         expander.assign(9, self.sw.l_gui)
         expander.assign(10, self.sw.delete)
-        expander.assign(11, self.sw.l_space)
-        expander.assign(12, self.sw.l_alt)
+        expander.assign(11, self.sw.l_alt)
+        expander.assign(12, self.sw.l_space)
 
         self.expanders.append(expander)
 
         # キーの割り当て、3つ目
-        expander = TCA9555(0x01)
+        expander = TCA9555(0x02)
         expander.assign(0, self.sw.kb_y)
         expander.assign(1, self.sw.kb_u)
         expander.assign(2, self.sw.kb_i)
@@ -412,6 +413,7 @@ class Column13ansiW:
         expander.assign(5, self.sw.minus)
         expander.assign(6, self.sw.back_space)
 
+        expander.assign(7, self.sw.exp2)
         expander.assign(8, self.sw.kb_h)
         expander.assign(9, self.sw.kb_j)
         expander.assign(10, self.sw.kb_k)
@@ -423,16 +425,15 @@ class Column13ansiW:
 
         # キーの割り当て、4つ目
         expander = TCA9555(0x03)
-        expander.assign(0, self.sw.exp2)
-        expander.assign(1, self.sw.kb_n)
-        expander.assign(2, self.sw.kb_m)
-        expander.assign(3, self.sw.comma)
-        expander.assign(4, self.sw.dot)
-        expander.assign(5, self.sw.up)
-        expander.assign(6, self.sw.slash)
+        expander.assign(0, self.sw.kb_n)
+        expander.assign(1, self.sw.kb_m)
+        expander.assign(2, self.sw.comma)
+        expander.assign(3, self.sw.dot)
+        expander.assign(4, self.sw.up)
+        expander.assign(5, self.sw.slash)
 
-        expander.assign(8, self.sw.r_gui)
-        expander.assign(9, self.sw.r_space)
+        expander.assign(8, self.sw.r_space)
+        expander.assign(9, self.sw.r_gui)
         expander.assign(10, self.sw.r_alt)
         expander.assign(11, self.sw.left)
         expander.assign(12, self.sw.down)
