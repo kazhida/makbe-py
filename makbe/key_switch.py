@@ -19,10 +19,13 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from typing import List
-
 from .actions import Action, TransAction, NoOpAction
 from .key_event import KeyEvent, KeyPressed, KeyReleased
+try:
+    from typing import Optional, List, Any, Tuple, Union
+except ImportError:
+    # CircuitPythonランタイムでは型ヒントをスキップ
+    pass
 
 
 class Debouncer:

@@ -44,7 +44,7 @@ print("started")
 # メインループ
 while True:
     # スキャナの更新（スキャンとイベント処理が非同期に行われる）
-    keyboard.scanner.update()
+    keyboard.scanner.scan()
     # 他の処理（例：LED更新、ディスプレイ更新など）
     #   keyboard.update_leds()
     #   keyboard.update_display()
