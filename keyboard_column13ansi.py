@@ -293,26 +293,26 @@ class Switches:
             trans(),
             trans()
         ])
-        self.l_alt = KeySwitch([
-            mt(KC.L_ALT, KC.LANG_2),
+        self.l_space = KeySwitch([
+            mt(KC.L_ALT, KC.SPACE),
             trans(),
             trans(),
             trans()
         ])
-        self.l_space = KeySwitch([
-            lt(Layer.LOWER, KC.SPACE),
+        self.l_alt = KeySwitch([
+            lt(Layer.LOWER, KC.LANG_2),
             trans(),
             trans(),
             trans()
         ])
         self.r_space = KeySwitch([
-            mt(KC.R_SHIFT, KC.SPACE),
+            mt(KC.R_SHIFT, KC.LANG_1),
             trans(),
             trans(),
             trans()
         ])
         self.r_gui = KeySwitch([
-            lt(Layer.RAISE, KC.LANG_1),
+            lt(Layer.RAISE, KC.SPACE),
             trans(),
             trans(),
             trans()
@@ -420,8 +420,8 @@ class Column13ansi:
         expander.assign(4, self.sw.up)
         expander.assign(5, self.sw.slash)
 
-        expander.assign(8, self.sw.r_space)
-        expander.assign(9, self.sw.r_gui)
+        expander.assign(8, self.sw.r_gui)
+        expander.assign(9, self.sw.r_space)
         expander.assign(10, self.sw.r_alt)
         expander.assign(11, self.sw.left)
         expander.assign(12, self.sw.down)
