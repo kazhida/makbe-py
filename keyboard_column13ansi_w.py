@@ -386,22 +386,6 @@ class Column13ansiW:
         self.expanders.append(expander)
 
         # キーの割り当て、2つ目
-        expander = TCA9555(0x02)
-        expander.assign(0, self.sw.l_shift)
-        expander.assign(1, self.sw.kb_z)
-        expander.assign(2, self.sw.kb_x)
-        expander.assign(3, self.sw.kb_c)
-        expander.assign(4, self.sw.kb_v)
-        expander.assign(5, self.sw.kb_b)
-        expander.assign(8, self.sw.l_ctrl)
-        expander.assign(9, self.sw.l_gui)
-        expander.assign(10, self.sw.delete)
-        expander.assign(11, self.sw.l_space)
-        expander.assign(12, self.sw.l_alt)
-
-        self.expanders.append(expander)
-
-        # キーの割り当て、3つ目
         expander = TCA9555(0x01)
         expander.assign(0, self.sw.kb_y)
         expander.assign(1, self.sw.kb_u)
@@ -417,6 +401,22 @@ class Column13ansiW:
         expander.assign(11, self.sw.kb_l)
         expander.assign(12, self.sw.semi_colon)
         expander.assign(13, self.sw.enter)
+
+        self.expanders.append(expander)
+
+        # キーの割り当て、3つ目
+        expander = TCA9555(0x02)
+        expander.assign(0, self.sw.l_shift)
+        expander.assign(1, self.sw.kb_z)
+        expander.assign(2, self.sw.kb_x)
+        expander.assign(3, self.sw.kb_c)
+        expander.assign(4, self.sw.kb_v)
+        expander.assign(5, self.sw.kb_b)
+        expander.assign(8, self.sw.l_ctrl)
+        expander.assign(9, self.sw.l_gui)
+        expander.assign(10, self.sw.delete)
+        expander.assign(11, self.sw.l_space)
+        expander.assign(12, self.sw.l_alt)
 
         self.expanders.append(expander)
 
