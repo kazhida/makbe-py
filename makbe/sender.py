@@ -34,3 +34,56 @@ class Sender:
 
     def release(self, key_code: int):
         self.kbd.release(key_code)
+
+
+class BleSender(Sender):
+    """Bluetooth LE HIDでキーコードを送出するクラス"""
+
+    KEYBOARD_APPEARANCE = 961
+
+    def __init__(self, name: str = "Makbe Keyboard", wait_for_connection: bool = False):
+        import adafruit_ble
+        from adafruit_ble.advertising import Advertisement
+        from adafruit_ble.advertising.standard import ProvideServicesAdvertisement
+        from adafruit_ble.services.standard.device_info import DeviceInfoService
+        from adafruit_ble.services.standard.hid import HIDService
+        from adafruit_hid.keyboard import Keyboard
+
+        self.ble = adafruit_ble.BLERadio()
+        self.ble.name = name
+        self.hid = HIDService()
+        self.device_info = DeviceInfoService(
+            software_revision=adafruit_ble.__version__,
+            manufacturer="makbe",
+        )
+
+        self.advertisement = ProvideServicesAdvertisement(self.hid)
+        self.advertisement.appearance = self.KEYBOARD_APPEARANCE
+        self.scan_response = Advertisement()
+        self.scan_response.complete_name = name
+
+        super().__init__(Keyboard(self.hid.devices))
+        self.start_advertising()
+
+        if wait_for_connection:
+            self.wait_for_connection()
+
+    def start_advertising(self):
+        if not self.ble.connected and not getattr(self.ble, "advertising", False):
+            self.ble.start_advertising(self.advertisement, self.scan_response)
+
+    def wait_for_connection(self):
+        while not self.ble.connected:
+            pass
+
+    def press(self, key_code: int):
+        if not self.ble.connected:
+            self.start_advertising()
+            return
+        super().press(key_code)
+
+    def release(self, key_code: int):
+        if not self.ble.connected:
+            self.start_advertising()
+            return
+        super().release(key_code)
