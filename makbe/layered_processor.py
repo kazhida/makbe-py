@@ -45,10 +45,10 @@ class WaitingState:
 
 class LayeredProcessor(Processor):
 
-    def __init__(self, kbd):
+    def __init__(self, sender):
         self.layer = 0
         self.waitingStates: [WaitingState] = []
-        self.kbd = kbd
+        self.sender = sender
         self.active_modifiers = set()  # 現在アクティブなモディファイアキー
         self.active_layers = {}        # 現在アクティブなレイヤー (レイヤー番号: アクティブ化したWaitingStateのリスト)
         # ホールドアクションが有効になった後のキー入力のための状態追跡
@@ -136,13 +136,13 @@ class LayeredProcessor(Processor):
         print(f"DEBUG: process_key_press called with key_code: {hex(key_code)}")
         if self.is_modifier(key_code):
             self.active_modifiers.add(key_code)
-        self.kbd.press(key_code)
+        self.sender.press(key_code)
 
     def process_key_release(self, key_code: int):
         """キー解放の処理"""
         if self.is_modifier(key_code):
             self.active_modifiers.discard(key_code)
-        self.kbd.release(key_code)
+        self.sender.release(key_code)
 
     def tick(self, now: int):
         # ホールドアクションがこのtick()で有効化されたかどうかをトラッキングするフラグ
