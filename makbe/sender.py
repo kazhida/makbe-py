@@ -19,34 +19,18 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from makbe import KeyEvent, KeyPressed, KeyReleased
-from makbe.processor import Processor
 
 
-class ModelessProcessor(Processor):
-    """デバウンス以外の内部処理をしないプロセッサ
-    レイヤやHoldTapを使用しない場合は、このプロセッサで十分
-    このライブラリの内部処理のバグから逃れられる
+class Sender:
+    """キーコードを送出するクラス
+    このクラスを継承したクラスで、送信時の動作を定義する
     """
 
-    def __init__(self, sender):
-        """
-        :param sender: CircuitPythonのadafruit_hid.keyboard.Keyboard
-        """
-        self.sender = sender
+    def __init__(self, kbd):
+        self.kbd = kbd
 
-    def put(self, event: KeyEvent, now: int):
-        """イベントの処理
-        イベントをそのままKeyboardに渡す
-        :param event: 処理するイベント
-        :param now: 現在時刻に相当する数値（ns単位）
-        """
-        if isinstance(event, KeyPressed):
-            print(str(event))
-            self.sender.press(event.switch.action(0).key_code)
-        if isinstance(event, KeyReleased):
-            print(str(event))
-            self.sender.release(event.switch.action(0).key_code)
+    def press(self, key_code: int):
+        self.kbd.press(key_code)
 
-    def tick(self, now: int):
-        pass
+    def release(self, key_code: int):
+        self.kbd.release(key_code)

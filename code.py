@@ -22,8 +22,9 @@
 
 #from keyboard_column7ansi import Column7ansi
 #from keyboard_column13ansi import Column13ansi
-from keyboard_column13ansi_w import Column13ansiW
+#from keyboard_column13ansi_w import Column13ansiW
 #from keyboard_column17ansi import Column17ansi
+from keyboard_card_pendant import CardPendant
 from time import sleep
 
 sleep(0.5)
@@ -31,7 +32,7 @@ print("start!")
 
 # キーボードを生成する
 # keyboard = Column7ansi()
-keyboard = Column13ansiW()
+keyboard = CardPendant()
 # keyboard = Column17ansi()
 print("started")
 
