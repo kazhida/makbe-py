@@ -23,8 +23,9 @@
 #from keyboard_column7ansi import Column7ansi
 #from keyboard_column13ansi import Column13ansi
 #from keyboard_column13ansi_w import Column13ansiW
+from keyboard_column13ansi_w_ble import Column13ansiWideBLE
 #from keyboard_column17ansi import Column17ansi
-from keyboard_card_pendant import CardPendant
+#from keyboard_card_pendant import CardPendant
 from time import sleep
 
 sleep(0.5)
@@ -32,7 +33,7 @@ print("start!")
 
 # キーボードを生成する
 # keyboard = Column7ansi()
-keyboard = CardPendant()
+keyboard = Column13ansiWideBLE()
 # keyboard = Column17ansi()
 print("started")
 
@@ -45,10 +46,12 @@ print("started")
 # メインループ
 while True:
     # スキャナの更新（スキャンとイベント処理が非同期に行われる）
-    keyboard.scanner.update()
+    if hasattr(keyboard, "update"):
+        keyboard.update()
+    else:
+        keyboard.scanner.update()
     # 他の処理（例：LED更新、ディスプレイ更新など）
     #   keyboard.update_leds()
     #   keyboard.update_display()
     # 必要に応じて短い遅延（全体の応答性を保つ）
     sleep(0.001)  # 1msの遅延
-

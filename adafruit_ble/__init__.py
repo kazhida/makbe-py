@@ -20,17 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""
+  dummies
+"""
 
-class Sender:
-    """キーコードを送出するクラス
-    このクラスを継承したクラスで、送信時の動作を定義する
-    """
 
-    def __init__(self, kbd):
-        self.kbd = kbd
+class Keyboard:
+    def __init__(self, devices):
+        self.devices = devices
 
-    def press(self, key_code: int):
-        self.kbd.press(key_code)
-
-    def release(self, key_code: int):
-        self.kbd.release(key_code)
+class BLERadio:
+    pass
