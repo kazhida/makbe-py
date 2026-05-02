@@ -19,17 +19,15 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import usb_hid
+#from board import GP4, GP5
 from board import SCL, SDA
 from busio import I2C
-from adafruit_hid.keyboard import Keyboard
+from makbe.ble_sender import BleSender
 
 from makbe.i2c_scanner import I2CScanner
 from makbe.key_switch import KeySwitch
 from makbe import kc, TCA9555, mc, mt, KeyCode, lt, trans
 from makbe.layered_processor import LayeredProcessor
-from makbe.sender import Sender
-from makbe.wrapped_kbd import WrappedKeyboard
 
 
 class KC(KeyCode):      # KeyCodeが頻出するので短縮形を作っておく
@@ -42,7 +40,6 @@ class Layer:
     RAISE = 2
     FUNCS = 3
 
-
 class Switches:
     """キースイッチ一覧
     このライブラリでは、Switchesクラスとして使用するキースイッチを全部列挙する
@@ -50,7 +47,7 @@ class Switches:
 
     def __init__(self):
         self.esc = KeySwitch([
-            kc(KC.ESCAPE),
+            lt(Layer.FUNCS, KC.ESCAPE),
             kc(KC.GRAVE),
             mc(KC.L_SHIFT, KC.GRAVE),
             trans()
@@ -58,80 +55,74 @@ class Switches:
 
         self.kb_q = KeySwitch([
             kc(KC.KB_Q),
-            mc(KC.L_GUI, KC.KB_Q),
             kc(KC.KB_1),
+            trans(),
             kc(KC.F1)
         ])
         self.kb_w = KeySwitch([
             kc(KC.KB_W),
-            mc(KC.L_GUI, KC.KB_W),
             kc(KC.KB_2),
+            trans(),
             kc(KC.F2)
         ])
         self.kb_e = KeySwitch([
             kc(KC.KB_E),
-            mc(KC.L_GUI, KC.KB_E),
             kc(KC.KB_3),
+            trans(),
             kc(KC.F3)
         ])
         self.kb_r = KeySwitch([
             kc(KC.KB_R),
-            mc(KC.L_GUI, KC.KB_R),
             kc(KC.KB_4),
+            trans(),
             kc(KC.F4)
         ])
         self.kb_t = KeySwitch([
             kc(KC.KB_T),
-            mc(KC.L_GUI, KC.KB_T),
             kc(KC.KB_5),
+            trans(),
             kc(KC.F5)
-        ])
-        self.ex_1 = KeySwitch([
-            mc(KC.L_SHIFT, mc(KC.L_GUI, KC.KB_4)),
-            trans(),
-            trans(),
-            trans()
         ])
         self.kb_y = KeySwitch([
             kc(KC.KB_Y),
-            mc(KC.L_GUI, KC.KB_Y),
             kc(KC.KB_6),
+            trans(),
             kc(KC.F6)
         ])
         self.kb_u = KeySwitch([
             kc(KC.KB_U),
-            mc(KC.L_GUI, KC.KB_U),
             kc(KC.KB_7),
+            trans(),
             kc(KC.F7)
         ])
         self.kb_i = KeySwitch([
             kc(KC.KB_I),
-            mc(KC.L_GUI, KC.KB_I),
             kc(KC.KB_8),
+            trans(),
             kc(KC.F8)
         ])
         self.kb_o = KeySwitch([
             kc(KC.KB_O),
-            mc(KC.L_GUI, KC.KB_O),
             kc(KC.KB_9),
+            trans(),
             kc(KC.F9)
         ])
         self.kb_p = KeySwitch([
             kc(KC.KB_P),
-            mc(KC.L_GUI, KC.KB_P),
             kc(KC.KB_0),
+            trans(),
             kc(KC.F10)
         ])
         self.minus = KeySwitch([
             kc(KC.MINUS),
             kc(KC.EQUAL),
-            kc(KC.EQUAL),
+            trans(),
             kc(KC.F11)
         ])
         self.back_space = KeySwitch([
             kc(KC.BACK_SPACE),
-            mc(KC.L_GUI, KC.BACK_SPACE),
             kc(KC.DELETE),
+            trans(),
             kc(KC.F12)
         ])
 
@@ -197,7 +188,7 @@ class Switches:
         ])
         self.semi_colon = KeySwitch([
             kc(KC.SEMI_COLON),
-            mc(KC.L_GUI, KC.SEMI_COLON),
+            kc(KC.QUOTE),
             trans(),
             trans()
         ])
@@ -244,12 +235,6 @@ class Switches:
             trans(),
             trans()
         ])
-        self.ex_2 = KeySwitch([
-            mc(KC.R_CTRL, mc(KC.R_GUI, KC.SPACE)),
-            trans(),
-            trans(),
-            trans()
-        ])
         self.kb_n = KeySwitch([
             kc(KC.KB_N),
             mc(KC.L_GUI, KC.KB_N),
@@ -276,8 +261,8 @@ class Switches:
         ])
         self.up = KeySwitch([
             kc(KC.UP),
-            mc(KC.L_GUI, KC.UP),
             kc(KC.PAGE_UP),
+            mc(KC.L_GUI, KC.UP),
             trans()
         ])
         self.slash = KeySwitch([
@@ -300,31 +285,31 @@ class Switches:
             trans()
         ])
         self.delete = KeySwitch([
-            kc(KC.DELETE),
-            trans(),
-            trans(),
-            trans()
-        ])
-        self.l_alt = KeySwitch([
-            mt(KC.L_ALT, KC.L_GUI),
+            mc(KC.R_ALT, KC.DELETE),
             trans(),
             trans(),
             trans()
         ])
         self.l_space = KeySwitch([
-            lt(Layer.LOWER, KC.SPACE),
+            kc(KC.SPACE),
             trans(),
             trans(),
             trans()
         ])
-        self.r_space = KeySwitch([
-            mt(KC.R_SHIFT, KC.SPACE),
+        self.l_alt = KeySwitch([
+            lt(Layer.LOWER, KC.L_GUI),
             trans(),
             trans(),
             trans()
         ])
         self.r_gui = KeySwitch([
-            lt(Layer.RAISE, KC.R_GUI),
+            mt(KC.R_SHIFT, KC.R_GUI),
+            trans(),
+            trans(),
+            trans()
+        ])
+        self.r_space = KeySwitch([
+            lt(Layer.RAISE, KC.SPACE),
             trans(),
             trans(),
             trans()
@@ -337,29 +322,46 @@ class Switches:
         ])
         self.left = KeySwitch([
             kc(KC.LEFT),
-            mc(KC.L_GUI, KC.LEFT),
             kc(KC.HOME),
+            mc(KC.L_GUI, KC.LEFT),
             trans()
         ])
         self.down = KeySwitch([
             kc(KC.DOWN),
-            mc(KC.L_GUI, KC.DOWN),
             kc(KC.PAGE_DOWN),
+            mc(KC.L_GUI, KC.DOWN),
             trans()
         ])
         self.right = KeySwitch([
             kc(KC.RIGHT),
-            mc(KC.L_GUI, KC.RIGHT),
             kc(KC.END),
+            mc(KC.L_GUI, KC.RIGHT),
+            trans()
+        ])
+        self.exp1 = KeySwitch([
+            kc(KC.KB_6),
+            trans(),
+            trans(),
+            trans()
+        ])
+        self.exp2 = KeySwitch([
+            kc(KC.KB_B),
+            trans(),
+            trans(),
             trans()
         ])
 
 
-class Column7ansi:
-    """例としてColumn7のansi配列を実装している
+class Column13ansiWideBLE:
+    """例としてColumn13のansi配列を実装している
     """
 
-    def __init__(self):
+    def __init__(
+        self,
+        pairing_mode: bool = False,
+        clear_bonds: bool = False,
+        wait_for_connection: bool = False,
+    ):
         """キーボードの初期化
         キースイッチクラスタを生成し、I2CScannerを使うのでI/Oエクスパンダにそれを割り当ててて、
         とりあえず、ModelessProcessorで処理するようにしている
@@ -377,7 +379,7 @@ class Column7ansi:
         expander.assign(3, self.sw.kb_e)
         expander.assign(4, self.sw.kb_r)
         expander.assign(5, self.sw.kb_t)
-        expander.assign(6, self.sw.ex_1)
+        expander.assign(6, self.sw.exp1)
 
         expander.assign(8, self.sw.tab)
         expander.assign(9, self.sw.kb_a)
@@ -390,23 +392,6 @@ class Column7ansi:
 
         # キーの割り当て、2つ目
         expander = TCA9555(0x01)
-        expander.assign(0, self.sw.l_shift)
-        expander.assign(1, self.sw.kb_z)
-        expander.assign(2, self.sw.kb_x)
-        expander.assign(3, self.sw.kb_c)
-        expander.assign(4, self.sw.kb_v)
-        expander.assign(5, self.sw.kb_b)
-
-        expander.assign(8, self.sw.l_ctrl)
-        expander.assign(9, self.sw.l_gui)
-        expander.assign(10, self.sw.delete)
-        expander.assign(11, self.sw.l_alt)
-        expander.assign(12, self.sw.l_space)
-
-        self.expanders.append(expander)
-
-        # キーの割り当て、3つ目
-        expander = TCA9555(0x02)
         expander.assign(0, self.sw.kb_y)
         expander.assign(1, self.sw.kb_u)
         expander.assign(2, self.sw.kb_i)
@@ -424,9 +409,25 @@ class Column7ansi:
 
         self.expanders.append(expander)
 
+        # キーの割り当て、3つ目
+        expander = TCA9555(0x02)
+        expander.assign(0, self.sw.l_shift)
+        expander.assign(1, self.sw.kb_z)
+        expander.assign(2, self.sw.kb_x)
+        expander.assign(3, self.sw.kb_c)
+        expander.assign(4, self.sw.kb_v)
+        expander.assign(5, self.sw.kb_b)
+        expander.assign(8, self.sw.l_ctrl)
+        expander.assign(9, self.sw.r_alt)
+        expander.assign(10, self.sw.l_gui)
+        expander.assign(11, self.sw.l_space)
+        expander.assign(12, self.sw.l_alt)
+
+        self.expanders.append(expander)
+
         # キーの割り当て、4つ目
         expander = TCA9555(0x03)
-        expander.assign(0, self.sw.ex_2)
+        expander.assign(0, self.sw.exp2)
         expander.assign(1, self.sw.kb_n)
         expander.assign(2, self.sw.kb_m)
         expander.assign(3, self.sw.comma)
@@ -434,9 +435,9 @@ class Column7ansi:
         expander.assign(5, self.sw.up)
         expander.assign(6, self.sw.slash)
 
-        expander.assign(8, self.sw.r_space)
-        expander.assign(9, self.sw.r_gui)
-        expander.assign(10, self.sw.r_alt)
+        expander.assign(8, self.sw.r_gui)
+        expander.assign(9, self.sw.r_space)
+        expander.assign(10, self.sw.delete)
         expander.assign(11, self.sw.left)
         expander.assign(12, self.sw.down)
         expander.assign(13, self.sw.right)
@@ -444,14 +445,27 @@ class Column7ansi:
         self.expanders.append(expander)
 
         # I2Cマスタの生成
-        i2c = I2C(SCL, SDA, 4000000)
+        i2c = I2C(SCL, SDA)
         while not i2c.try_lock():
             pass
 
         # プロセッサの生成
-        kbd = WrappedKeyboard(Keyboard(usb_hid.devices))
-        # kbd = Keyboard(usb_hid.devices)
-        proc = LayeredProcessor(Sender(kbd))
+        sender = BleSender(
+            name="Makbe Column13 Wide",
+            clear_bonds=clear_bonds or pairing_mode,
+            wait_for_connection=wait_for_connection,
+        )
+        proc = LayeredProcessor(sender)
+        self.sender = sender
 
         # スキャナの生成
         self.scanner = I2CScanner(self.expanders, i2c, proc)
+
+    def start_pairing(self, clear_bonds: bool = False):
+        if clear_bonds:
+            self.sender.clear_bonds()
+        self.sender.start_advertising()
+
+    def update(self):
+        self.scanner.update()
+        self.sender.update()

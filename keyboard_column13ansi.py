@@ -301,13 +301,13 @@ class Switches:
             trans()
         ])
         self.l_alt = KeySwitch([
-            lt(Layer.LOWER, KC.LANG_2),
+            lt(Layer.LOWER, KC.L_GUI),
             trans(),
             trans(),
             trans()
         ])
         self.r_space = KeySwitch([
-            mt(KC.R_SHIFT, KC.LANG_1),
+            mt(KC.R_SHIFT, KC.R_GUI),
             trans(),
             trans(),
             trans()

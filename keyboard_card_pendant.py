@@ -21,7 +21,7 @@
 # SOFTWARE.
 import usb_hid
 from adafruit_hid.keyboard import Keyboard
-from board import SCL, SDA
+from board import SCL, SDA, D2, D3
 from busio import I2C
 from makbe import KeyCode, KeySwitch, kc, mc, trans, lt, I2CScanner
 from makbe.expanders.pca9536 import PCA9536
@@ -88,6 +88,7 @@ class CardPendant:
 
         # I2Cマスタの生成
         i2c = I2C(SCL, SDA)
+        # i2c = I2C(D3, D2)
         while not i2c.try_lock():
             pass
 

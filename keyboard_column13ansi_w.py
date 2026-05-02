@@ -57,74 +57,74 @@ class Switches:
 
         self.kb_q = KeySwitch([
             kc(KC.KB_Q),
-            mc(KC.L_GUI, KC.KB_Q),
             kc(KC.KB_1),
+            trans(),
             kc(KC.F1)
         ])
         self.kb_w = KeySwitch([
             kc(KC.KB_W),
-            mc(KC.L_GUI, KC.KB_W),
             kc(KC.KB_2),
+            trans(),
             kc(KC.F2)
         ])
         self.kb_e = KeySwitch([
             kc(KC.KB_E),
-            mc(KC.L_GUI, KC.KB_E),
             kc(KC.KB_3),
+            trans(),
             kc(KC.F3)
         ])
         self.kb_r = KeySwitch([
             kc(KC.KB_R),
-            mc(KC.L_GUI, KC.KB_R),
             kc(KC.KB_4),
+            trans(),
             kc(KC.F4)
         ])
         self.kb_t = KeySwitch([
             kc(KC.KB_T),
-            mc(KC.L_GUI, KC.KB_T),
             kc(KC.KB_5),
+            trans(),
             kc(KC.F5)
         ])
         self.kb_y = KeySwitch([
             kc(KC.KB_Y),
-            mc(KC.L_GUI, KC.KB_Y),
             kc(KC.KB_6),
+            trans(),
             kc(KC.F6)
         ])
         self.kb_u = KeySwitch([
             kc(KC.KB_U),
-            mc(KC.L_GUI, KC.KB_U),
             kc(KC.KB_7),
+            trans(),
             kc(KC.F7)
         ])
         self.kb_i = KeySwitch([
             kc(KC.KB_I),
-            mc(KC.L_GUI, KC.KB_I),
             kc(KC.KB_8),
+            trans(),
             kc(KC.F8)
         ])
         self.kb_o = KeySwitch([
             kc(KC.KB_O),
-            mc(KC.L_GUI, KC.KB_O),
             kc(KC.KB_9),
+            trans(),
             kc(KC.F9)
         ])
         self.kb_p = KeySwitch([
             kc(KC.KB_P),
-            mc(KC.L_GUI, KC.KB_P),
             kc(KC.KB_0),
+            trans(),
             kc(KC.F10)
         ])
         self.minus = KeySwitch([
             kc(KC.MINUS),
             kc(KC.EQUAL),
-            kc(KC.EQUAL),
+            trans(),
             kc(KC.F11)
         ])
         self.back_space = KeySwitch([
             kc(KC.BACK_SPACE),
-            mc(KC.L_GUI, KC.BACK_SPACE),
             kc(KC.DELETE),
+            trans(),
             kc(KC.F12)
         ])
 
@@ -190,7 +190,7 @@ class Switches:
         ])
         self.semi_colon = KeySwitch([
             kc(KC.SEMI_COLON),
-            mc(KC.L_GUI, KC.SEMI_COLON),
+            kc(KC.QUOTE),
             trans(),
             trans()
         ])
@@ -251,6 +251,7 @@ class Switches:
         ])
         self.comma = KeySwitch([
             kc(KC.COMMA),
+            kc(KC.L_BRACKET),
             mc(KC.R_SHIFT, KC.L_BRACKET),
             trans()
         ])
@@ -286,7 +287,7 @@ class Switches:
             trans()
         ])
         self.delete = KeySwitch([
-            kc(KC.DELETE),
+            mc(KC.R_ALT, KC.DELETE),
             trans(),
             trans(),
             trans()
@@ -298,13 +299,13 @@ class Switches:
             trans()
         ])
         self.l_alt = KeySwitch([
-            lt(Layer.LOWER, KC.LANG_2),
+            lt(Layer.LOWER, KC.L_GUI),
             trans(),
             trans(),
             trans()
         ])
         self.r_gui = KeySwitch([
-            mt(KC.R_SHIFT, KC.LANG_1),
+            mt(KC.R_SHIFT, KC.R_GUI),
             trans(),
             trans(),
             trans()
@@ -414,8 +415,8 @@ class Column13ansiW:
         expander.assign(4, self.sw.kb_v)
         expander.assign(5, self.sw.kb_b)
         expander.assign(8, self.sw.l_ctrl)
-        expander.assign(9, self.sw.l_gui)
-        expander.assign(10, self.sw.delete)
+        expander.assign(9, self.sw.r_alt)
+        expander.assign(10, self.sw.l_gui)
         expander.assign(11, self.sw.l_space)
         expander.assign(12, self.sw.l_alt)
 
@@ -433,7 +434,7 @@ class Column13ansiW:
 
         expander.assign(8, self.sw.r_gui)
         expander.assign(9, self.sw.r_space)
-        expander.assign(10, self.sw.r_alt)
+        expander.assign(10, self.sw.delete)
         expander.assign(11, self.sw.left)
         expander.assign(12, self.sw.down)
         expander.assign(13, self.sw.right)
