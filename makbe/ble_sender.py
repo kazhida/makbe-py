@@ -55,6 +55,7 @@ class BleSender(Sender):
 
         self.ble = adafruit_ble.BLERadio()
         self.ble.name = name
+        self.connected = False
 
         super().__init__(Keyboard(self.hid.devices))
         self.start_advertising()
@@ -77,6 +78,13 @@ class BleSender(Sender):
             pass
 
     def update(self):
+        connected = self.ble.connected
+        if connected != self.connected:
+            self.connected = connected
+            if connected:
+                print("BLE connected")
+            else:
+                print("BLE disconnected")
         self.start_advertising()
 
     def press(self, key_code: int):
