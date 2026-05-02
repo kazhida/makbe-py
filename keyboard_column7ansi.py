@@ -306,7 +306,7 @@ class Switches:
             trans()
         ])
         self.l_alt = KeySwitch([
-            mt(KC.L_ALT, KC.LANG_2),
+            mt(KC.L_ALT, KC.L_GUI),
             trans(),
             trans(),
             trans()
@@ -324,7 +324,7 @@ class Switches:
             trans()
         ])
         self.r_gui = KeySwitch([
-            lt(Layer.RAISE, KC.LANG_1),
+            lt(Layer.RAISE, KC.R_GUI),
             trans(),
             trans(),
             trans()
