@@ -20,10 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from board import SCL, SDA, D2, D3, D4, D5
+
 #from keyboard_column7ansi import Column7ansi
 #from keyboard_column13ansi import Column13ansi
-#from keyboard_column13ansi_w import Column13ansiW
-from keyboard_column13ansi_w_ble import Column13ansiWideBLE
+from keyboard_column13ansi_w import Column13ansiW
+#from keyboard_column13ansi_w_ble import Column13ansiWideBLE
+from keyboard_nakaniwa import Nakaniwa
 #from keyboard_column17ansi import Column17ansi
 #from keyboard_card_pendant import CardPendant
 from time import sleep
@@ -32,11 +35,9 @@ sleep(0.5)
 print("start!")
 
 # キーボードを生成する
-# keyboard = Column7ansi()
-keyboard = Column13ansiWideBLE()
-# keyboard = Column17ansi()
+#keyboard = Column13ansiW()
+keyboard = Nakaniwa(SCL, SDA)
 print("started")
-
 
 # キーマップのカスタマイズはここでやる
 # ex)

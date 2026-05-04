@@ -92,6 +92,8 @@ class CardPendant:
         while not i2c.try_lock():
             pass
 
+        print([hex(addr) for addr in i2c.scan()])
+
         # プロセッサの生成
         kbd = WrappedKeyboard(Keyboard(usb_hid.devices))
         # kbd = Keyboard(usb_hid.devices)

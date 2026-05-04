@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import usb_hid
-#from board import GP4, GP5
-from board import SCL, SDA
 from busio import I2C
 from adafruit_hid.keyboard import Keyboard
 
@@ -30,7 +28,6 @@ from makbe.key_switch import KeySwitch
 from makbe import kc, TCA9555, mc, mt, KeyCode, lt, trans
 from makbe.layered_processor import LayeredProcessor
 from makbe.sender import Sender
-from makbe.wrapped_kbd import WrappedKeyboard
 
 
 class KC(KeyCode):      # KeyCodeが頻出するので短縮形を作っておく
@@ -43,7 +40,6 @@ class Layer:
     RAISE = 2
     FUNCS = 3
 
-
 class Switches:
     """キースイッチ一覧
     このライブラリでは、Switchesクラスとして使用するキースイッチを全部列挙する
@@ -53,86 +49,182 @@ class Switches:
         self.esc = KeySwitch([
             kc(KC.ESCAPE),
             kc(KC.GRAVE),
-            mc(KC.L_SHIFT, KC.GRAVE),
+            trans(),
             trans()
         ])
-
-        self.kb_q = KeySwitch([
-            kc(KC.KB_Q),
-            mc(KC.L_GUI, KC.KB_Q),
+        self.kb_1 = KeySwitch([
             kc(KC.KB_1),
-            kc(KC.F1)
+            kc(KC.F1),
+            trans(),
+            trans()
         ])
-        self.kb_w = KeySwitch([
-            kc(KC.KB_W),
-            mc(KC.L_GUI, KC.KB_W),
+        self.kb_2 = KeySwitch([
             kc(KC.KB_2),
-            kc(KC.F2)
+            kc(KC.F2),
+            trans(),
+            trans()
         ])
-        self.kb_e = KeySwitch([
-            kc(KC.KB_E),
-            mc(KC.L_GUI, KC.KB_E),
+        self.kb_3 = KeySwitch([
             kc(KC.KB_3),
-            kc(KC.F3)
+            kc(KC.F3),
+            trans(),
+            trans()
         ])
-        self.kb_r = KeySwitch([
-            kc(KC.KB_R),
-            mc(KC.L_GUI, KC.KB_R),
+        self.kb_4 = KeySwitch([
             kc(KC.KB_4),
-            kc(KC.F4)
+            kc(KC.F4),
+            trans(),
+            trans()
         ])
-        self.kb_t = KeySwitch([
-            kc(KC.KB_T),
-            mc(KC.L_GUI, KC.KB_T),
+        self.kb_5 = KeySwitch([
             kc(KC.KB_5),
-            kc(KC.F5)
+            kc(KC.F5),
+            trans(),
+            trans()
         ])
-        self.kb_y = KeySwitch([
-            kc(KC.KB_Y),
-            mc(KC.L_GUI, KC.KB_Y),
+        self.kb_6 = KeySwitch([
             kc(KC.KB_6),
-            kc(KC.F6)
+            kc(KC.F6),
+            trans(),
+            trans()
         ])
-        self.kb_u = KeySwitch([
-            kc(KC.KB_U),
-            mc(KC.L_GUI, KC.KB_U),
+        self.kb_7 = KeySwitch([
             kc(KC.KB_7),
-            kc(KC.F7)
+            kc(KC.F7),
+            trans(),
+            trans()
         ])
-        self.kb_i = KeySwitch([
-            kc(KC.KB_I),
-            mc(KC.L_GUI, KC.KB_I),
+        self.kb_8 = KeySwitch([
             kc(KC.KB_8),
-            kc(KC.F8)
+            kc(KC.F8),
+            trans(),
+            trans()
         ])
-        self.kb_o = KeySwitch([
-            kc(KC.KB_O),
-            mc(KC.L_GUI, KC.KB_O),
+        self.kb_9 = KeySwitch([
             kc(KC.KB_9),
-            kc(KC.F9)
+            kc(KC.F9),
+            trans(),
+            trans()
         ])
-        self.kb_p = KeySwitch([
-            kc(KC.KB_P),
-            mc(KC.L_GUI, KC.KB_P),
+        self.kb_0 = KeySwitch([
             kc(KC.KB_0),
-            kc(KC.F10)
+            kc(KC.F10),
+            trans(),
+            trans()
         ])
         self.minus = KeySwitch([
             kc(KC.MINUS),
-            kc(KC.EQUAL),
-            kc(KC.EQUAL),
-            kc(KC.F11)
+            kc(KC.F11),
+            trans(),
+            trans()
         ])
-        self.back_space = KeySwitch([
-            kc(KC.BACK_SPACE),
-            mc(KC.L_GUI, KC.BACK_SPACE),
-            kc(KC.DELETE),
-            kc(KC.F12)
+        self.equal = KeySwitch([
+            kc(KC.EQUAL),
+            kc(KC.F12),
+            trans(),
+            trans()
+        ])
+        self.back_slash = KeySwitch([
+            kc(KC.BACK_SLASH),
+            trans(),
+            trans(),
+            trans()
+        ])
+        self.grave = KeySwitch([
+            kc(KC.GRAVE),
+            trans(),
+            trans(),
+            trans()
         ])
 
         self.tab = KeySwitch([
             kc(KC.TAB),
             mc(KC.L_GUI, KC.TAB),
+            trans(),
+            trans()
+        ])
+        self.kb_q = KeySwitch([
+            kc(KC.KB_Q),
+            mc(KC.L_GUI, KC.KB_Q),
+            trans(),
+            trans()
+        ])
+        self.kb_w = KeySwitch([
+            kc(KC.KB_W),
+            mc(KC.L_GUI, KC.KB_W),
+            trans(),
+            trans()
+        ])
+        self.kb_e = KeySwitch([
+            kc(KC.KB_E),
+            mc(KC.L_GUI, KC.KB_E),
+            trans(),
+            trans()
+        ])
+        self.kb_r = KeySwitch([
+            kc(KC.KB_R),
+            mc(KC.L_GUI, KC.KB_R),
+            trans(),
+            trans()
+        ])
+        self.kb_t = KeySwitch([
+            kc(KC.KB_T),
+            mc(KC.L_GUI, KC.KB_T),
+            trans(),
+            trans()
+        ])
+        self.kb_y = KeySwitch([
+            kc(KC.KB_Y),
+            mc(KC.L_GUI, KC.KB_Y),
+            trans(),
+            trans()
+        ])
+        self.kb_u = KeySwitch([
+            kc(KC.KB_U),
+            mc(KC.L_GUI, KC.KB_U),
+            trans(),
+            trans()
+        ])
+        self.kb_i = KeySwitch([
+            kc(KC.KB_I),
+            mc(KC.L_GUI, KC.KB_I),
+            trans(),
+            kc(KC.F8)
+        ])
+        self.kb_o = KeySwitch([
+            kc(KC.KB_O),
+            mc(KC.L_GUI, KC.KB_O),
+            trans(),
+            kc(KC.F9)
+        ])
+        self.kb_p = KeySwitch([
+            kc(KC.KB_P),
+            mc(KC.L_GUI, KC.KB_P),
+            trans(),
+            kc(KC.F10)
+        ])
+        self.l_bracket = KeySwitch([
+            kc(KC.L_BRACKET),
+            mc(KC.L_GUI, KC.L_BRACKET),
+            trans(),
+            trans()
+        ])
+        self.r_bracket = KeySwitch([
+            kc(KC.R_BRACKET),
+            mc(KC.L_GUI, KC.R_BRACKET),
+            trans(),
+            trans()
+        ])
+        self.back_space = KeySwitch([
+            kc(KC.BACK_SPACE),
+            kc(KC.DELETE),
+            trans(),
+            trans()
+        ])
+
+        self.caps = KeySwitch([
+            kc(KC.CAPS_LOCK),
+            mc(KC.L_GUI, KC.CAPS_LOCK),
             trans(),
             trans()
         ])
@@ -192,7 +284,13 @@ class Switches:
         ])
         self.semi_colon = KeySwitch([
             kc(KC.SEMI_COLON),
-            mc(KC.L_GUI, KC.SEMI_COLON),
+            kc(KC.QUOTE),
+            trans(),
+            trans()
+        ])
+        self.quote = KeySwitch([
+            kc(KC.QUOTE),
+            mc(KC.L_GUI, KC.QUOTE),
             trans(),
             trans()
         ])
@@ -253,26 +351,38 @@ class Switches:
         ])
         self.comma = KeySwitch([
             kc(KC.COMMA),
-            kc(KC.L_BRACKET),
-            mc(KC.R_SHIFT, KC.L_BRACKET),
+            mc(KC.L_GUI, KC.COMMA),
+            trans(),
             trans()
         ])
         self.dot = KeySwitch([
             kc(KC.DOT),
-            kc(KC.R_BRACKET),
-            mc(KC.R_SHIFT, KC.R_BRACKET),
-            trans()
-        ])
-        self.up = KeySwitch([
-            kc(KC.UP),
-            mc(KC.L_GUI, KC.UP),
-            kc(KC.PAGE_UP),
+            mc(KC.L_GUI, KC.DOT),
+            trans(),
             trans()
         ])
         self.slash = KeySwitch([
             kc(KC.SLASH),
-            kc(KC.BACK_SLASH),
-            kc(KC.BACK_SLASH),
+            mc(KC.L_GUI, KC.SLASH),
+            trans(),
+            trans()
+        ])
+        self.r_shift = KeySwitch([
+            kc(KC.R_SHIFT),
+            trans(),
+            trans(),
+            trans()
+        ])
+        self.up = KeySwitch([
+            kc(KC.UP),
+            kc(KC.PAGE_UP),
+            trans(),
+            trans()
+        ])
+        self.delete = KeySwitch([
+            kc(KC.DELETE),
+            trans(),
+            trans(),
             trans()
         ])
 
@@ -288,32 +398,33 @@ class Switches:
             trans(),
             trans()
         ])
-        self.delete = KeySwitch([
-            kc(KC.DELETE),
+        self.l_alt = KeySwitch([
+            kc(KC.L_ALT),
             trans(),
             trans(),
             trans()
         ])
+
         self.l_space = KeySwitch([
-            mt(KC.L_ALT, KC.SPACE),
+            kc(KC.SPACE),
             trans(),
             trans(),
             trans()
         ])
         self.l_alt = KeySwitch([
-            lt(Layer.LOWER, KC.LANG_2),
-            trans(),
-            trans(),
-            trans()
-        ])
-        self.r_space = KeySwitch([
-            mt(KC.R_SHIFT, KC.LANG_1),
+            lt(Layer.LOWER, KC.L_GUI),
             trans(),
             trans(),
             trans()
         ])
         self.r_gui = KeySwitch([
-            lt(Layer.RAISE, KC.SPACE),
+            mt(KC.R_SHIFT, KC.R_GUI),
+            trans(),
+            trans(),
+            trans()
+        ])
+        self.r_space = KeySwitch([
+            kc(KC.SPACE),
             trans(),
             trans(),
             trans()
@@ -326,29 +437,65 @@ class Switches:
         ])
         self.left = KeySwitch([
             kc(KC.LEFT),
-            mc(KC.L_GUI, KC.LEFT),
             kc(KC.HOME),
+            trans(),
             trans()
         ])
         self.down = KeySwitch([
             kc(KC.DOWN),
-            mc(KC.L_GUI, KC.DOWN),
             kc(KC.PAGE_DOWN),
+            trans(),
             trans()
         ])
         self.right = KeySwitch([
             kc(KC.RIGHT),
-            mc(KC.L_GUI, KC.RIGHT),
             kc(KC.END),
+            trans(),
+            trans()
+        ])
+        self.exp1 = KeySwitch([
+            kc(KC.KB_6),
+            trans(),
+            trans(),
+            trans()
+        ])
+        self.exp2 = KeySwitch([
+            kc(KC.KB_B),
+            trans(),
+            trans(),
+            trans()
+        ])
+        self.dmy1 = KeySwitch([
+            kc(KC.KB_1),
+            trans(),
+            trans(),
+            trans()
+        ])
+        self.dmy2 = KeySwitch([
+            kc(KC.KB_2),
+            trans(),
+            trans(),
+            trans()
+        ])
+        self.dmy3 = KeySwitch([
+            kc(KC.KB_3),
+            trans(),
+            trans(),
+            trans()
+        ])
+        self.dmy4 = KeySwitch([
+            kc(KC.KB_4),
+            trans(),
+            trans(),
             trans()
         ])
 
 
-class Column13ansi:
+class Nakaniwa:
     """例としてColumn13のansi配列を実装している
     """
 
-    def __init__(self):
+    def __init__(self, scl, sda):
         """キーボードの初期化
         キースイッチクラスタを生成し、I2CScannerを使うのでI/Oエクスパンダにそれを割り当ててて、
         とりあえず、ModelessProcessorで処理するようにしている
@@ -357,86 +504,108 @@ class Column13ansi:
         # スイッチとI/Oエクスパンダのリストを生成
         self.sw = Switches()
         self.expanders = []
+        self.scl = scl
+        self.sda = sda
 
         # キーの割り当て、1つ目
         expander = TCA9555(0x00)
         expander.assign(0, self.sw.esc)
-        expander.assign(1, self.sw.kb_q)
-        expander.assign(2, self.sw.kb_w)
-        expander.assign(3, self.sw.kb_e)
-        expander.assign(4, self.sw.kb_r)
-        expander.assign(5, self.sw.kb_t)
-
-        expander.assign(8, self.sw.tab)
-        expander.assign(9, self.sw.kb_a)
-        expander.assign(10, self.sw.kb_s)
-        expander.assign(11, self.sw.kb_d)
-        expander.assign(12, self.sw.kb_f)
-        expander.assign(13, self.sw.kb_g)
-
+        expander.assign(1, self.sw.kb_1)
+        expander.assign(2, self.sw.kb_2)
+        expander.assign(3, self.sw.kb_3)
+        expander.assign(4, self.sw.kb_4)
+        expander.assign(5, self.sw.kb_5)
+        expander.assign(6, self.sw.exp1)
+        expander.assign(7, self.sw.tab)
+        expander.assign(8, self.sw.kb_q)
+        expander.assign(9, self.sw.kb_w)
+        expander.assign(10, self.sw.kb_e)
+        expander.assign(11, self.sw.kb_r)
+        expander.assign(12, self.sw.kb_t)
+        expander.assign(13, self.sw.caps)
+        expander.assign(14, self.sw.kb_a)
+        expander.assign(15, self.sw.kb_s)
         self.expanders.append(expander)
 
         # キーの割り当て、2つ目
         expander = TCA9555(0x01)
-        expander.assign(0, self.sw.l_shift)
-        expander.assign(1, self.sw.kb_z)
-        expander.assign(2, self.sw.kb_x)
-        expander.assign(3, self.sw.kb_c)
-        expander.assign(4, self.sw.kb_v)
-        expander.assign(5, self.sw.kb_b)
-
-        expander.assign(8, self.sw.l_ctrl)
-        expander.assign(9, self.sw.l_gui)
-        expander.assign(10, self.sw.delete)
-        expander.assign(11, self.sw.l_alt)
+        expander.assign(0, self.sw.kb_d)
+        expander.assign(1, self.sw.kb_f)
+        expander.assign(2, self.sw.kb_g)
+        expander.assign(3, self.sw.l_shift)
+        expander.assign(4, self.sw.kb_z)
+        expander.assign(5, self.sw.kb_x)
+        expander.assign(6, self.sw.kb_c)
+        expander.assign(7, self.sw.kb_v)
+        expander.assign(8, self.sw.kb_b)
+        expander.assign(9, self.sw.l_ctrl)
+        expander.assign(10, self.sw.r_alt)
+        expander.assign(11, self.sw.l_gui)
         expander.assign(12, self.sw.l_space)
-
+        expander.assign(13, self.sw.l_alt)
         self.expanders.append(expander)
 
         # キーの割り当て、3つ目
         expander = TCA9555(0x02)
-        expander.assign(0, self.sw.kb_y)
-        expander.assign(1, self.sw.kb_u)
-        expander.assign(2, self.sw.kb_i)
-        expander.assign(3, self.sw.kb_o)
-        expander.assign(4, self.sw.kb_p)
+        expander.assign(0, self.sw.kb_6)
+        expander.assign(1, self.sw.kb_7)
+        expander.assign(2, self.sw.kb_8)
+        expander.assign(3, self.sw.kb_9)
+        expander.assign(4, self.sw.kb_0)
         expander.assign(5, self.sw.minus)
-        expander.assign(6, self.sw.back_space)
-
-        expander.assign(8, self.sw.kb_h)
-        expander.assign(9, self.sw.kb_j)
-        expander.assign(10, self.sw.kb_k)
-        expander.assign(11, self.sw.kb_l)
-        expander.assign(12, self.sw.semi_colon)
-        expander.assign(13, self.sw.enter)
-
+        expander.assign(6, self.sw.equal)
+        expander.assign(7, self.sw.back_slash)
+        expander.assign(8, self.sw.grave)
+        expander.assign(9, self.sw.kb_y)
+        expander.assign(10, self.sw.kb_u)
+        expander.assign(11, self.sw.kb_i)
+        expander.assign(12, self.sw.kb_o)
+        expander.assign(13, self.sw.kb_p)
+        expander.assign(14, self.sw.l_bracket)
+        expander.assign(15, self.sw.r_bracket)
         self.expanders.append(expander)
 
         # キーの割り当て、4つ目
         expander = TCA9555(0x03)
-        expander.assign(0, self.sw.kb_n)
-        expander.assign(1, self.sw.kb_m)
-        expander.assign(2, self.sw.comma)
-        expander.assign(3, self.sw.dot)
-        expander.assign(4, self.sw.up)
-        expander.assign(5, self.sw.slash)
+        expander.assign(0, self.sw.back_space)
+        expander.assign(1, self.sw.kb_h)
+        expander.assign(2, self.sw.kb_j)
+        expander.assign(3, self.sw.kb_k)
+        expander.assign(4, self.sw.kb_l)
+        expander.assign(5, self.sw.semi_colon)
+        expander.assign(6, self.sw.quote)
+        expander.assign(7, self.sw.enter)
+        expander.assign(8, self.sw.exp2)
+        expander.assign(9, self.sw.kb_n)
+        expander.assign(10, self.sw.kb_m)
+        expander.assign(11, self.sw.comma)
+        expander.assign(12, self.sw.dot)
+        expander.assign(13, self.sw.slash)
+        expander.assign(14, self.sw.r_shift)
+        expander.assign(15, self.sw.up)
+        self.expanders.append(expander)
 
-        expander.assign(8, self.sw.r_gui)
-        expander.assign(9, self.sw.r_space)
-        expander.assign(10, self.sw.r_alt)
-        expander.assign(11, self.sw.left)
-        expander.assign(12, self.sw.down)
-        expander.assign(13, self.sw.right)
-
+        # キーの割り当て、5つ目
+        expander = TCA9555(0x03)
+        expander.assign(0, self.sw.delete)
+        expander.assign(1, self.sw.r_gui)
+        expander.assign(2, self.sw.dmy1)
+        expander.assign(3, self.sw.dmy2)
+        expander.assign(4, self.sw.dmy3)
+        expander.assign(5, self.sw.dmy4)
+        expander.assign(6, self.sw.left)
+        expander.assign(7, self.sw.down)
+        expander.assign(8, self.sw.right)
         self.expanders.append(expander)
 
         # I2Cマスタの生成
-        i2c = I2C(SCL, SDA)
+        i2c = I2C(self.scl, self.sda)
         while not i2c.try_lock():
             pass
 
+        print([hex(addr) for addr in i2c.scan()])
+
         # プロセッサの生成
-        # kbd = WrappedKeyboard(Keyboard(usb_hid.devices))
         kbd = Keyboard(usb_hid.devices)
         proc = LayeredProcessor(Sender(kbd))
 
