@@ -44,7 +44,10 @@ class Switches:
     このライブラリでは、Switchesクラスとして使用するキースイッチを全部列挙する
     """
 
-    def __init__(self):
+    def __init__(self, scl, sda):
+
+        self.scl = scl
+        self.sda = sda
 
         self.kb_h = KeySwitch([
             lt(Layer.FUNCS, KC.KB_H),
@@ -67,7 +70,7 @@ class CardPendant:
     """例としてColumn7のansi配列を実装している
     """
 
-    def __init__(self):
+    def __init__(self, scl, sda):
         """キーボードの初期化
         キースイッチクラスタを生成し、I2CScannerを使うのでI/Oエクスパンダにそれを割り当ててて、
         とりあえず、ModelessProcessorで処理するようにしている

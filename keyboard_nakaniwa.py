@@ -586,13 +586,13 @@ class Nakaniwa:
         self.expanders.append(expander)
 
         # キーの割り当て、5つ目
-        expander = TCA9555(0x03)
+        expander = TCA9555(0x04)
         expander.assign(0, self.sw.delete)
         expander.assign(1, self.sw.r_gui)
         expander.assign(2, self.sw.dmy1)
-        expander.assign(3, self.sw.dmy2)
+        expander.assign(3, self.sw.r_space)
         expander.assign(4, self.sw.dmy3)
-        expander.assign(5, self.sw.dmy4)
+        expander.assign(5, self.sw.r_gui)
         expander.assign(6, self.sw.left)
         expander.assign(7, self.sw.down)
         expander.assign(8, self.sw.right)

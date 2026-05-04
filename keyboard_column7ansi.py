@@ -48,7 +48,10 @@ class Switches:
     このライブラリでは、Switchesクラスとして使用するキースイッチを全部列挙する
     """
 
-    def __init__(self):
+    def __init__(self, scl, sda):
+        self.scl = scl
+        self.sda = sda
+
         self.esc = KeySwitch([
             kc(KC.ESCAPE),
             kc(KC.GRAVE),

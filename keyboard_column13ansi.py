@@ -30,7 +30,6 @@ from makbe.key_switch import KeySwitch
 from makbe import kc, TCA9555, mc, mt, KeyCode, lt, trans
 from makbe.layered_processor import LayeredProcessor
 from makbe.sender import Sender
-from makbe.wrapped_kbd import WrappedKeyboard
 
 
 class KC(KeyCode):      # KeyCodeが頻出するので短縮形を作っておく
@@ -49,7 +48,10 @@ class Switches:
     このライブラリでは、Switchesクラスとして使用するキースイッチを全部列挙する
     """
 
-    def __init__(self):
+    def __init__(self, scl, sda):
+        self.scl = scl
+        self.sda = sda
+
         self.esc = KeySwitch([
             kc(KC.ESCAPE),
             kc(KC.GRAVE),
