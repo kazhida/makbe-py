@@ -16,21 +16,28 @@
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARvfrISING FRlvfOM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from board import SCL, SDA, D2, D3
+import board
 
-from keyboard_column13ansi_w_ble import Column13ansiWideBLE
+#from keyboard_column7ansi import Column7ansi
+#from keyboard_column13ansi import Column13ansi
+#from keyboard_column13ansi_w import Column13ansiW
+#from keyboard_column17ansi import Column17ansi
+from keyboard_helix_pico_right import HelixPicoRight
 from time import sleep
 
 sleep(0.5)
 print("start!")
 
 # キーボードを生成する
-keyboard = Column13ansiWideBLE(SCL, SDA)
+# keyboard = Column7ansi()
+keyboard = HelixPicoRight()
+# keyboard = Column17ansi()
 print("started")
+
 
 # キーマップのカスタマイズはここでやる
 # ex)
@@ -40,12 +47,10 @@ print("started")
 # メインループ
 while True:
     # スキャナの更新（スキャンとイベント処理が非同期に行われる）
-    if hasattr(keyboard, "update"):
-        keyboard.update()
-    else:
-        keyboard.scanner.update()
+    keyboard.scanner.update()
     # 他の処理（例：LED更新、ディスプレイ更新など）
     #   keyboard.update_leds()
     #   keyboard.update_display()
     # 必要に応じて短い遅延（全体の応答性を保つ）
     sleep(0.001)  # 1msの遅延
+
