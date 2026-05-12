@@ -21,14 +21,14 @@
 # SOFTWARE.
 import usb_hid
 
-from board import A3, A2, A1, A0, SCK, MISO, MOSI, D4, D5, D6, D7
+from board import D29, D28, D27, D26, D22, D20, D23, D4, D5, D6, D7
 
 from adafruit_hid.keyboard import Keyboard
 
 from makbe.key_switch import KeySwitch, nop_switch
 from makbe import kc, TCA9555, mc, mt, KeyCode, lt, trans
 from makbe.layered_processor import LayeredProcessor
-from makbe.matrix_scanner import MatrixScanner
+from makbe.c2r_matrix_scanner import Col2RowMatrixScanner
 from makbe.sender import Sender
 from makbe.wrapped_kbd import WrappedKeyboard
 
@@ -364,45 +364,53 @@ class HelixPicoRight:
         """
         # スイッチとI/Oエクスパンダのリストを生成
 
-        cols = [A3, A2, A1, A0, SCK, MISO, MOSI]
+        #cols = [D23, D20, D22, D26, D27, D28, D29]
+        #rows = [D7, D6, D5, D4]
+        cols = [D23, D20, D22, D26, D27, D28, D29]
         rows = [D4, D5, D6, D7]
 
         self.sw = Switches()
-        self.matrix: list[list[KeySwitch]] = [
+        self.matrix = [
             [
                 self.sw.kb_y,
-                self.sw.kb_q,
-                self.sw.kb_w,
-                self.sw.kb_e,
-                self.sw.kb_r,
-                self.sw.kb_t,
-                self.sw.slash
-            ],
-            [
                 self.sw.kb_u,
-                self.sw.kb_a,
-                self.sw.kb_s,
-                self.sw.kb_d,
-                self.sw.kb_f,
-                self.sw.kb_g,
-                self.sw.minus
-            ],
-            [
                 self.sw.kb_i,
-                self.sw.kb_z,
-                self.sw.kb_x,
-                self.sw.kb_c,
-                self.sw.kb_v,
-                self.sw.kb_b,
-                self.sw.semi_colon
+                self.sw.kb_o
             ],
             [
-                self.sw.kb_o,
-                self.sw.kb_h,
-                self.sw.kb_j,
-                self.sw.kb_k,
-                self.sw.kb_l,
-                self.sw.kb_n,
+                self.sw.kb_q,
+                self.sw.kb_a,
+                self.sw.kb_z,
+                self.sw.kb_h
+            ],
+            [
+                self.sw.kb_w,
+                self.sw.kb_s,
+                self.sw.kb_x,
+                self.sw.kb_j
+            ],
+            [
+                self.sw.kb_e,
+                self.sw.kb_d,
+                self.sw.kb_c,
+                self.sw.kb_k
+            ],
+            [
+                self.sw.kb_r,
+                self.sw.kb_f,
+                self.sw.kb_v,
+                self.sw.kb_l
+            ],
+            [
+                self.sw.kb_t,
+                self.sw.kb_g,
+                self.sw.kb_b,
+                self.sw.kb_n
+            ],
+            [
+                self.sw.slash,
+                self.sw.minus,
+                self.sw.semi_colon,
                 self.sw.kb_m
             ]
         ]
@@ -413,12 +421,10 @@ class HelixPicoRight:
         proc = LayeredProcessor(Sender(kbd))
 
         # スキャナの生成
-        self.scanner = MatrixScanner(
-            row2col = False,
+        self.scanner = Col2RowMatrixScanner(
             matrix = self.matrix,
             row_pins = rows,
             col_pins = cols,
             processor = proc,
             active_low = True,
-            debug = True,
             drive_inactive = False)
