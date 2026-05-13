@@ -28,8 +28,7 @@ from adafruit_hid.keyboard import Keyboard
 from makbe.key_switch import KeySwitch, nop_switch
 from makbe import kc, TCA9555, mc, mt, KeyCode, lt, trans, la
 from makbe.layered_processor import LayeredProcessor
-from makbe.c2r_matrix_scanner import Col2RowMatrixScanner
-from makbe.r2c_matrix_scanner import Row2ColMatrixScanner
+from makbe.matrix_scanner import MatrixScanner
 from makbe.sender import Sender
 from makbe.wrapped_kbd import WrappedKeyboard
 
@@ -486,10 +485,11 @@ class PopnTopLeft:
         proc = LayeredProcessor(Sender(kbd))
 
         # スキャナの生成
-        self.scanner = Row2ColMatrixScanner(
+        self.scanner = MatrixScanner(
             matrix = self.matrix,
             row_pins = rows,
             col_pins = cols,
             processor = proc,
-            active_low = True,
+            col_to_row = False,
+            active_low = False,
             drive_inactive = False)

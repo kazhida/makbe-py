@@ -26,7 +26,7 @@ from time import monotonic_ns, sleep
 from makbe import Scanner, Processor, KeyPressed, KeyReleased, KeySwitch, EventQueue
 
 
-class Row2ColMatrixScanner(Scanner):
+class MatrixScanner(Scanner):
 
     def __init__(
             self,
@@ -36,14 +36,18 @@ class Row2ColMatrixScanner(Scanner):
             processor: Processor,
             settle_time: float = 0.001,
             active_low: bool = True,
-            drive_inactive: bool = False):
+            drive_inactive: bool = False,
+            col_to_row: bool = False):
         super().__init__(EventQueue(), processor)
-        if len(matrix) != len(row_pins):
-            raise ValueError("matrix row count must match row_pins")
-
-        for row in matrix:
-            if len(row) != len(col_pins):
-                raise ValueError("matrix column count must match col_pins")
+        self.col_to_row = col_to_row
+        if col_to_row:
+            self._validate_col_to_row(matrix, row_pins, col_pins)
+            out_pins = col_pins
+            in_pins = row_pins
+        else:
+            self._validate_row_to_col(matrix, row_pins, col_pins)
+            out_pins = row_pins
+            in_pins = col_pins
 
         self.matrix = matrix
         self.settle_time = settle_time
@@ -53,14 +57,14 @@ class Row2ColMatrixScanner(Scanner):
         self.inactive_value = active_low
 
         self.out_pins = []
-        for pin in row_pins:
+        for pin in out_pins:
             dio = digitalio.DigitalInOut(pin)
             self.out_pins.append(dio)
-            self._deselect_row(dio)
+            self._deselect(dio)
 
         pull = digitalio.Pull.UP if active_low else digitalio.Pull.DOWN
         self.in_pins = []
-        for pin in col_pins:
+        for pin in in_pins:
             dio = digitalio.DigitalInOut(pin)
             dio.switch_to_input(pull=pull)
             self.in_pins.append(dio)
@@ -68,23 +72,34 @@ class Row2ColMatrixScanner(Scanner):
     def scan(self):
         now = monotonic_ns() // 1000 // 1000
 
-        for row_index, row_pin in enumerate(self.out_pins):
-            self._select_row(row_pin)
+        for out_index, out_pin in enumerate(self.out_pins):
+            self._select(out_pin)
             if self.settle_time > 0:
                 sleep(self.settle_time)
 
-            for col_index, col_pin in enumerate(self.in_pins):
-                switch = self.matrix[row_index][col_index]
-                event = switch.update(col_pin.value == self.selected_value)
+            for in_index, in_pin in enumerate(self.in_pins):
+                if self.col_to_row:
+                    col_index = out_index
+                    row_index = in_index
+                    switch = self.matrix[col_index][row_index]
+                else:
+                    row_index = out_index
+                    col_index = in_index
+                    switch = self.matrix[row_index][col_index]
+
+                event = switch.update(in_pin.value == self.selected_value)
                 if isinstance(event, KeyPressed) or isinstance(event, KeyReleased):
                     self.event_queue.enqueue(event, now)
-                    print(f"[{row_index},{col_index}]")
-            self._deselect_row(row_pin)
+                    if self.col_to_row:
+                        print(f"[{col_index},{row_index}]")
+                    else:
+                        print(f"[{row_index},{col_index}]")
+            self._deselect(out_pin)
 
-    def _select_row(self, pin):
+    def _select(self, pin):
         pin.switch_to_output(value=self.selected_value)
 
-    def _deselect_row(self, pin):
+    def _deselect(self, pin):
         if self.drive_inactive:
             pin.switch_to_output(value=self.inactive_value)
         else:
@@ -96,3 +111,19 @@ class Row2ColMatrixScanner(Scanner):
 
         for pin in self.in_pins:
             pin.deinit()
+
+    def _validate_row_to_col(self, matrix, row_pins, col_pins):
+        if len(matrix) != len(row_pins):
+            raise ValueError("matrix row count must match row_pins")
+
+        for row in matrix:
+            if len(row) != len(col_pins):
+                raise ValueError("matrix column count must match col_pins")
+
+    def _validate_col_to_row(self, matrix, row_pins, col_pins):
+        if len(matrix) != len(col_pins):
+            raise ValueError("matrix column count must match col_pins")
+
+        for col in matrix:
+            if len(col) != len(row_pins):
+                raise ValueError("matrix row count must match row_pins")
