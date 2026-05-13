@@ -16,15 +16,17 @@
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARvfrISING FRlvfOM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
+import board
 
 #from keyboard_column7ansi import Column7ansi
 #from keyboard_column13ansi import Column13ansi
 #from keyboard_column13ansi_w import Column13ansiW
 #from keyboard_column17ansi import Column17ansi
-from keyboard_card_pendant import CardPendant
+from keyboard_helix_pico_right import HelixPicoRight
 from time import sleep
 
 sleep(0.5)
@@ -32,7 +34,7 @@ print("start!")
 
 # キーボードを生成する
 # keyboard = Column7ansi()
-keyboard = CardPendant()
+keyboard = HelixPicoRight()
 # keyboard = Column17ansi()
 print("started")
 

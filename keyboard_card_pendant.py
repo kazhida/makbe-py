@@ -21,7 +21,7 @@
 # SOFTWARE.
 import usb_hid
 from adafruit_hid.keyboard import Keyboard
-from board import SCL, SDA
+from board import SCL, SDA, D2, D3
 from busio import I2C
 from makbe import KeyCode, KeySwitch, kc, mc, trans, lt, I2CScanner
 from makbe.expanders.pca9536 import PCA9536
@@ -44,7 +44,10 @@ class Switches:
     このライブラリでは、Switchesクラスとして使用するキースイッチを全部列挙する
     """
 
-    def __init__(self):
+    def __init__(self, scl, sda):
+
+        self.scl = scl
+        self.sda = sda
 
         self.kb_h = KeySwitch([
             lt(Layer.FUNCS, KC.KB_H),
@@ -67,7 +70,7 @@ class CardPendant:
     """例としてColumn7のansi配列を実装している
     """
 
-    def __init__(self):
+    def __init__(self, scl, sda):
         """キーボードの初期化
         キースイッチクラスタを生成し、I2CScannerを使うのでI/Oエクスパンダにそれを割り当ててて、
         とりあえず、ModelessProcessorで処理するようにしている
@@ -88,8 +91,11 @@ class CardPendant:
 
         # I2Cマスタの生成
         i2c = I2C(SCL, SDA)
+        # i2c = I2C(D3, D2)
         while not i2c.try_lock():
             pass
+
+        print([hex(addr) for addr in i2c.scan()])
 
         # プロセッサの生成
         kbd = WrappedKeyboard(Keyboard(usb_hid.devices))

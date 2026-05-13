@@ -357,11 +357,13 @@ class Column13ansiW:
     """例としてColumn13のansi配列を実装している
     """
 
-    def __init__(self):
+    def __init__(self, scl, sda):
         """キーボードの初期化
         キースイッチクラスタを生成し、I2CScannerを使うのでI/Oエクスパンダにそれを割り当ててて、
         とりあえず、ModelessProcessorで処理するようにしている
         """
+        self.scl = scl
+        self.sda = sda
 
         # スイッチとI/Oエクスパンダのリストを生成
         self.sw = Switches()
