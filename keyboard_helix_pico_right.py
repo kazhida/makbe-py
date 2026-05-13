@@ -28,7 +28,7 @@ from adafruit_hid.keyboard import Keyboard
 from makbe.key_switch import KeySwitch, nop_switch
 from makbe import kc, TCA9555, mc, mt, KeyCode, lt, trans
 from makbe.layered_processor import LayeredProcessor
-from makbe.c2r_matrix_scanner import Col2RowMatrixScanner
+from makbe.matrix_scanner import MatrixScanner
 from makbe.sender import Sender
 from makbe.wrapped_kbd import WrappedKeyboard
 
@@ -421,10 +421,11 @@ class HelixPicoRight:
         proc = LayeredProcessor(Sender(kbd))
 
         # スキャナの生成
-        self.scanner = Col2RowMatrixScanner(
+        self.scanner = MatrixScanner(
             matrix = self.matrix,
             row_pins = rows,
             col_pins = cols,
             processor = proc,
+            col_to_row = True,
             active_low = True,
             drive_inactive = False)
