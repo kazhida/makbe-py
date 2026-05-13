@@ -357,7 +357,7 @@ class Column13ansiWideBLE:
     """
 
     def __init__(
-        self,
+        self, scl, sda,
         pairing_mode: bool = False,
         clear_bonds: bool = False,
         wait_for_connection: bool = False,
